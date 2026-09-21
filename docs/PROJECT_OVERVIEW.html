@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Meridian — Project Overview</title>
+<style>
+  :root {
+    --paper: #faf8f3;
+    --ink: #131a17;
+    --ink-soft: #3f4a45;
+    --ink-faint: #75817b;
+    --brand-50: #f0f7f4;
+    --brand-100: #d9ece4;
+    --brand-300: #88bfa9;
+    --brand-500: #3a866c;
+    --brand-600: #2a6b56;
+    --brand-700: #235647;
+    --brand-800: #1f453a;
+    --brand-900: #1b3a31;
+    --brand-950: #0c211b;
+    --gold-300: #f5d78a;
+    --gold-400: #eec25f;
+    --gold-500: #d9a53c;
+    --line: #e5e1d6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55;
+  }
+  .serif { font-family: Georgia, "Times New Roman", serif; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  h1 { font-size: 42px; letter-spacing: -0.5px; }
+  h2 { font-size: 26px; letter-spacing: -0.3px; margin-bottom: 6px; }
+  h3 { font-size: 15px; margin-bottom: 4px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--brand-600); margin-bottom: 10px;
+  }
+  .sub { color: var(--ink-faint); font-size: 14px; max-width: 640px; margin-bottom: 28px; }
+  .grid { display: grid; gap: 18px; }
+  .card {
+    background: #fff; border-radius: 16px; padding: 18px;
+    box-shadow: 0 1px 2px rgb(16 24 20 / .05), 0 8px 24px -14px rgb(16 24 20 / .14);
+  }
+  .badge {
+    display: inline-block; background: var(--brand-800); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .badge.gold { background: var(--gold-400); color: var(--brand-950); }
+  .badge.slate { background: #eceae2; color: var(--ink-soft); }
+  .muted { color: var(--ink-faint); }
+  .pill {
+    display: inline-block; border: 1px solid var(--line); background: #fff;
+    border-radius: 999px; padding: 3px 12px; font-size: 12px; color: var(--ink-soft);
+    margin: 0 6px 6px 0;
+  }
+  /* ---------- hero ---------- */
+  .hero {
+    background: var(--brand-950);
+    color: #fff; padding: 72px 0 64px; position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 18% 30%, rgb(238 194 95 / .18) 0, transparent 34%),
+      radial-gradient(circle at 85% 75%, rgb(58 134 108 / .25) 0, transparent 42%);
+    pointer-events: none;
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+  .hero .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgb(238 194 95 / .45); background: rgb(238 194 95 / .1);
+    color: var(--gold-300); font-size: 12px; font-weight: 600;
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .hero p.lede { color: rgb(217 236 228 / .85); max-width: 560px; margin-top: 16px; font-size: 15px; }
+  .stack-row { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .stack-row span {
+    background: rgb(255 255 255 / .08); border: 1px solid rgb(255 255 255 / .14);
+    padding: 5px 12px; border-radius: 999px; font-size: 12px; color: #d9ece4;
+  }
+  /* ---------- palette ---------- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .swatch { border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgb(16 24 20/.08); }
+  .swatch .chip { height: 74px; }
+  .swatch .meta { padding: 10px 12px; font-size: 12px; }
+  .swatch .meta b { display: block; font-size: 13px; }
+  /* ---------- type ---------- */
+  .type-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .type-demo .card .specimen-lg { font-size: 34px; line-height: 1.1; letter-spacing: -.5px; }
+  .type-demo .card .specimen-md { font-size: 20px; margin-top: 10px; }
+  /* ---------- components ---------- */
+  .comp-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .btn-demo {
+    border: none; cursor: default; font-weight: 600; font-size: 14px;
+    padding: 11px 24px; border-radius: 999px;
+  }
+  .btn-primary { background: var(--brand-800); color: #fff; }
+  .btn-gold { background: var(--gold-400); color: var(--brand-950); }
+  .btn-outline { background: #fff; border: 1px solid #d8d4c8; color: var(--ink); }
+  .stars { color: var(--gold-500); letter-spacing: 2px; }
+  /* ---------- screens ---------- */
+  .screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; }
+  .screen { background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 1px 3px rgb(16 24 20/.07), 0 14px 40px -20px rgb(16 24 20/.2); }
+  .screen .shot { background: #f1efe8; padding: 14px; border-bottom: 1px solid var(--line); }
+  .screen .info { padding: 16px 18px 18px; }
+  .screen .info h3 { font-size: 16px; }
+  .screen .info .route { font-size: 12px; font-family: ui-monospace, monospace; color: var(--brand-600); margin-bottom: 6px; }
+  .screen .info p { font-size: 13px; color: var(--ink-soft); }
+  /* wireframe primitives */
+  .wf { font-size: 8px; }
+  .wf .b { background: #fff; border-radius: 6px; }
+  .wf .dark { background: var(--brand-950); color: #e8f2ed; }
+  .wf .gold { background: var(--gold-400); }
+  .wf .green { background: var(--brand-600); }
+  .wf .ghost { background: #e2dfd4; border-radius: 4px; }
+  .wf .row { display: flex; gap: 5px; }
+  .wf .col { display: flex; flex-direction: column; gap: 5px; }
+  .wf .grow { flex: 1; }
+  .wf .lbl { font-size: 7px; color: var(--ink-faint); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+  .wf .h1 { font-size: 13px; font-weight: 700; line-height: 1.2; }
+  .wf .h2 { font-size: 10px; font-weight: 700; }
+  .wf .nav { display: flex; align-items: center; gap: 6px; background: #fff; border-radius: 6px; padding: 5px 8px; margin-bottom: 6px; }
+  .wf .nav .logo { width: 14px; height: 14px; background: var(--brand-900); border-radius: 4px; }
+  .wf .nav .pill { width: 26px; height: 6px; background: #e2dfd4; border-radius: 3px; }
+  .wf .nav .search { flex: 1; height: 8px; background: #f1efe8; border: 1px solid #e2dfd4; border-radius: 999px; }
+  .wf .nav .cart { width: 12px; height: 12px; background: var(--gold-400); border-radius: 50%; margin-left: auto; }
+  /* ---------- architecture ---------- */
+  .arch { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .arch .box { border: 1.5px solid var(--brand-300); background: var(--brand-50); border-radius: 14px; padding: 16px; }
+  .arch .box.mid { background: #fff; }
+  .arch ul { list-style: none; margin-top: 8px; font-size: 12.5px; color: var(--ink-soft); }
+  .arch li { padding: 4px 0 4px 16px; position: relative; }
+  .arch li::before { content: "›"; position: absolute; left: 2px; color: var(--brand-600); font-weight: 700; }
+  .flow { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 22px 0; font-size: 13px; }
+  .flow .step { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; font-weight: 600; }
+  .flow .step.hl { background: var(--brand-800); color: #fff; border-color: var(--brand-800); }
+  .flow .arrow { color: var(--ink-faint); }
+  /* ---------- data model ---------- */
+  .models { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .model { background: #fff; border-radius: 14px; border: 1px solid var(--line); overflow: hidden; }
+  .model .head { background: var(--brand-900); color: #fff; padding: 9px 14px; font-weight: 700; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+  .model .head span { font-size: 9px; background: rgb(255 255 255 / .15); padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+  .model ul { list-style: none; padding: 10px 14px 14px; font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
+  .model li { padding: 2.5px 0; }
+  .model li b { color: var(--brand-700); font-weight: 600; }
+  footer { padding: 40px 0; text-align: center; color: var(--ink-faint); font-size: 13px; }
+  @media (max-width: 720px) { .type-demo, .arch { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ============================== HERO ============================== -->
+<div class="hero">
+  <div class="wrap">
+    <span class="tag">✦ Full-Stack Development Project · 2026</span>
+    <h1 class="serif">Meridian<span style="color:var(--gold-400)">.</span></h1>
+    <p class="lede">
+      A production-grade, multi-category e-commerce marketplace. One storefront, six curated
+      categories, a complete admin console — designed around a calm evergreen &amp; gold
+      identity and engineered end-to-end: React frontend, Express API, MongoDB, deployed
+      on Render + Vercel.
+    </p>
+    <div class="stack-row">
+      <span>React 18</span><span>Vite 5</span><span>Tailwind CSS</span><span>Express 4</span>
+      <span>MongoDB + Mongoose</span><span>JWT Auth</span><span>Zod Validation</span>
+      <span>Render + Vercel</span>
+    </div>
+  </div>
+</div>
+
+<!-- =========================== IDENTITY =========================== -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">01 · Visual identity</p>
+    <h2 class="serif">A calm, premium palette</h2>
+    <p class="sub">
+      Deep evergreen conveys trust (the backbone of any store), warm parchment keeps it
+      human, and a restrained gold is reserved for moments that matter — bestseller badges,
+      CTAs, and the logo mark. No loud marketplace red; this reads like a curated boutique.
+    </p>
+
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:var(--brand-950)"></div><div class="meta"><b>Evergreen 950</b><span class="muted">#0c211b · hero, footer</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-800)"></div><div class="meta"><b>Evergreen 800</b><span class="muted">#1f453a · primary buttons</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-600)"></div><div class="meta"><b>Evergreen 600</b><span class="muted">#2a6b56 · links, accents</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-100)"></div><div class="meta"><b>Evergreen 100</b><span class="muted">#d9ece4 · soft tints</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gold-400)"></div><div class="meta"><b>Gold 400</b><span class="muted">#eec25f · CTAs, badges</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gold-300)"></div><div class="meta"><b>Gold 300</b><span class="muted">#f5d78a · stars, hovers</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink)"></div><div class="meta"><b>Ink</b><span class="muted">#131a17 · body text</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#faf8f3;border-bottom:1px solid var(--line)"></div><div class="meta"><b>Paper</b><span class="muted">#faf8f3 · page background</span></div></div>
+    </div>
+
+    <div class="type-demo" style="margin-top:26px">
+      <div class="card">
+        <p class="lbl" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:8px">Display — Fraunces (serif)</p>
+        <p class="specimen-lg serif">Everything worth owning.</p>
+        <p class="specimen-md serif muted">Headlines, section titles, prices</p>
+      </div>
+      <div class="card">
+        <p class="lbl" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:8px">Body — Inter (sans)</p>
+        <p style="font-size:14px">The quiet workhorse for product copy, forms, tables and labels.</p>
+        <p style="font-size:12px;margin-top:10px" class="muted">₹4,498 · MRD-MUARV0ID-WWKO · FREE shipping over ₹1,499</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:30px;margin-bottom:12px">Component language</h3>
+    <div class="card">
+      <div class="comp-row">
+        <button class="btn-demo btn-primary">Add to cart</button>
+        <button class="btn-demo btn-gold">Buy now</button>
+        <button class="btn-demo btn-outline">View all →</button>
+        <span class="badge">Bestseller</span>
+        <span class="badge gold">25% off</span>
+        <span class="badge slate">Only 3 left</span>
+        <span class="stars">★★★★<span style="opacity:.25">★</span></span>
+        <span class="pill">Electronics</span><span class="pill">Fashion</span><span class="pill">Home &amp; Living</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint);margin-top:14px">
+        Fully rounded corners (16–24px cards, pill buttons), soft layered shadows, gentle
+        rise-in animations and hover lifts. Cards on parchment — never harsh borders.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SCREENS ============================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">02 · The storefront, screen by screen</p>
+    <h2 class="serif">Twelve screens, two roles</h2>
+    <p class="sub">Annotated wireframes of every page in the build. The live site is running in the dev preview — these match it 1:1.</p>
+
+    <div class="screens">
+
+      <!-- HOME -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="nav"><div class="logo"></div><div class="pill"></div><div class="pill"></div><div class="search"></div><div class="cart"></div></div>
+          <div class="dark" style="border-radius:8px;padding:12px;margin-bottom:6px">
+            <div style="display:flex;gap:10px">
+              <div class="col grow" style="justify-content:center">
+                <div style="width:36px;height:5px;background:var(--gold-400);border-radius:3px"></div>
+                <div class="h1" style="color:#fff">Everything worth<br/>owning, delivered.</div>
+                <div style="width:70%;height:4px;background:rgb(255 255 255/.25);border-radius:3px"></div>
+                <div style="width:44px;height:10px;background:var(--gold-400);border-radius:999px"></div>
+              </div>
+              <div style="width:44%;height:64px;background:linear-gradient(135deg,#3a866c,#1b3a31);border-radius:8px"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="b grow" style="height:34px;background:linear-gradient(160deg,#d9ece4,#f0f7f4)"></div>
+            <div class="b grow" style="height:34px;background:linear-gradient(160deg,#f5d78a,#faf3dd)"></div>
+            <div class="b grow" style="height:34px;background:linear-gradient(160deg,#e8d5c4,#f7efe6)"></div>
+          </div>
+          <div class="row" style="margin-top:5px">
+            <div class="b grow" style="height:40px"></div><div class="b grow" style="height:40px"></div>
+            <div class="b grow" style="height:40px"></div><div class="b grow" style="height:40px"></div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/</div>
+          <h3>Home</h3>
+          <p>Dark evergreen hero with photo + floating “₹4.5L+ orders” card → six-tile category bento with live product counts → featured bestsellers → gold coupon banner (MERIDIAN10) → new arrivals.</p>
+        </div>
+      </div>
+
+      <!-- SHOP -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="nav"><div class="logo"></div><div class="pill"></div><div class="search"></div><div class="cart"></div></div>
+          <div class="row">
+            <div class="col" style="width:30%">
+              <div class="lbl">Filters</div>
+              <div class="b" style="padding:6px"><div class="ghost" style="height:5px;width:60%;margin-bottom:3px"></div><div class="ghost" style="height:5px;width:80%;margin-bottom:3px"></div><div class="ghost" style="height:5px;width:50%"></div></div>
+              <div class="b" style="padding:6px"><div class="ghost" style="height:5px;width:70%;margin-bottom:3px"></div><div class="ghost" style="height:5px;width:55%"></div></div>
+              <div class="b" style="padding:6px"><div class="ghost" style="height:5px;width:65%"></div></div>
+            </div>
+            <div class="col grow">
+              <div class="row" style="justify-content:flex-end"><div style="width:56px;height:9px;background:#fff;border:1px solid var(--line);border-radius:999px"></div></div>
+              <div class="row"><div class="b grow" style="height:38px"></div><div class="b grow" style="height:38px"></div><div class="b grow" style="height:38px"></div></div>
+              <div class="row"><div class="b grow" style="height:38px"></div><div class="b grow" style="height:38px"></div><div class="b grow" style="height:38px"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/shop</div>
+          <h3>Shop / Catalog</h3>
+          <p>Sticky filter sidebar (category, price bands, rating, brand checkboxes) + search, 6 sort modes and pagination. Mobile gets a slide-in filter drawer. Empty state when nothing matches.</p>
+        </div>
+      </div>
+
+      <!-- PRODUCT -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="lbl" style="margin-bottom:4px">Home › Shop › Electronics › Product</div>
+          <div class="row">
+            <div class="b" style="width:46%;aspect-ratio:1;background:linear-gradient(145deg,#e8e4d8,#f4f1e9);display:flex;align-items:flex-start;padding:5px"><span class="badge" style="font-size:6px;padding:2px 5px">25% OFF</span></div>
+            <div class="col grow" style="justify-content:center">
+              <div class="lbl">Aurex · Electronics</div>
+              <div class="h2">Aurex Air 5 Earbuds</div>
+              <div class="stars" style="font-size:8px">★★★★<span style="opacity:.25">★</span> <span class="muted">(1,284)</span></div>
+              <div class="h1" style="color:var(--brand-800)">₹2,499</div>
+              <div class="ghost" style="height:4px;width:90%"></div>
+              <div class="ghost" style="height:4px;width:75%"></div>
+              <div class="row">
+                <div style="width:12px;height:12px;border-radius:50%;background:#111827"></div>
+                <div style="width:12px;height:12px;border-radius:50%;background:#D8C7AE"></div>
+              </div>
+              <div class="row">
+                <div style="width:30px;height:11px;background:#fff;border:1px solid var(--line);border-radius:999px"></div>
+                <div style="height:11px;padding:2px 8px;background:var(--brand-800);color:#fff;border-radius:999px;font-size:6px;display:flex;align-items:center">Add to cart</div>
+                <div style="height:11px;padding:2px 8px;background:var(--gold-400);border-radius:999px;font-size:6px;display:flex;align-items:center">Buy now</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/product/:slug</div>
+          <h3>Product detail</h3>
+          <p>Gallery with badges, rating, strike-through MRP + discount chip, highlight checklist, colour swatches &amp; size pills, quantity stepper, specs table + SKU, trust strip (shipping/returns/warranty) and related products.</p>
+        </div>
+      </div>
+
+      <!-- CART -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="h2" style="margin-bottom:5px">Your cart</div>
+          <div class="row" style="align-items:stretch">
+            <div class="col grow" style="width:62%">
+              <div class="b" style="padding:5px"><div class="row"><div class="ghost" style="width:26px;height:26px;border-radius:5px"></div><div class="col grow"><div class="ghost" style="height:5px;width:70%"></div><div class="ghost" style="height:4px;width:40%"></div><div class="row" style="margin-top:2px"><div style="width:26px;height:8px;border:1px solid var(--line);border-radius:999px"></div><div class="grow"></div><div class="h2" style="color:var(--brand-800)">₹4,998</div></div></div></div></div>
+              <div class="b" style="padding:5px"><div class="row"><div class="ghost" style="width:26px;height:26px;border-radius:5px"></div><div class="col grow"><div class="ghost" style="height:5px;width:60%"></div><div class="ghost" style="height:4px;width:35%"></div></div></div></div>
+            </div>
+            <div class="col grow" style="width:38%">
+              <div class="b" style="padding:6px">
+                <div class="h2">Order summary</div>
+                <div style="height:9px;border:1px solid var(--line);border-radius:6px;margin:4px 0"></div>
+                <div class="ghost" style="height:4px;width:80%;margin-bottom:2px"></div>
+                <div class="ghost" style="height:4px;width:60%;margin-bottom:2px"></div>
+                <div style="height:10px;background:var(--brand-800);border-radius:999px;margin-top:4px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/cart</div>
+          <h3>Cart</h3>
+          <p>Line items with steppers and remove, coupon field (server-validated), live totals, and a gold “add ₹X more for free shipping” nudge. Cart persists in localStorage.</p>
+        </div>
+      </div>
+
+      <!-- CHECKOUT -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="h2" style="margin-bottom:5px">Checkout</div>
+          <div class="row" style="align-items:stretch">
+            <div class="col grow" style="width:62%">
+              <div class="b" style="padding:6px">
+                <div class="lbl">Shipping address</div>
+                <div class="row"><div style="height:9px;border:1px solid var(--line);border-radius:5px;flex:1"></div><div style="height:9px;border:1px solid var(--line);border-radius:5px;flex:1"></div></div>
+                <div style="height:9px;border:1px solid var(--line);border-radius:5px;margin-top:4px"></div>
+              </div>
+              <div class="b" style="padding:6px">
+                <div class="lbl">Payment</div>
+                <div class="row">
+                  <div style="flex:1;height:20px;border:2px solid var(--brand-600);background:var(--brand-50);border-radius:6px"></div>
+                  <div style="flex:1;height:20px;border:1px solid var(--line);border-radius:6px"></div>
+                  <div style="flex:1;height:20px;border:1px solid var(--line);border-radius:6px"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col grow" style="width:38%">
+              <div class="b" style="padding:6px"><div class="h2">Summary</div><div class="ghost" style="height:4px;width:80%;margin:3px 0"></div><div class="ghost" style="height:4px;width:60%;margin-bottom:3px"></div><div class="h1" style="color:var(--brand-800);font-size:10px">₹4,498</div><div style="height:10px;background:var(--brand-800);border-radius:999px;margin-top:4px"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/checkout</div>
+          <h3>Checkout</h3>
+          <p>Address form with Indian validation (10-digit mobile, 6-digit PIN) prefilled from saved addresses; UPI / Card / Netbanking / COD tiles; prices &amp; stock re-verified server-side on submit.</p>
+        </div>
+      </div>
+
+      <!-- ORDER TRACKING -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="lbl" style="margin-bottom:4px">My orders › MRD-MUARV0ID</div>
+          <div class="row" style="align-items:stretch">
+            <div class="col grow" style="width:60%">
+              <div class="b" style="padding:7px">
+                <div class="h2">Delivery timeline</div>
+                <div class="col" style="margin-top:4px;padding-left:4px;border-left:2px solid var(--brand-600)">
+                  <div class="row" style="align-items:center"><div style="width:7px;height:7px;border-radius:50%;background:var(--brand-700)"></div><div class="ghost grow" style="height:4px"></div></div>
+                  <div class="row" style="align-items:center"><div style="width:7px;height:7px;border-radius:50%;background:var(--brand-700)"></div><div class="ghost grow" style="height:4px"></div></div>
+                  <div class="row" style="align-items:center"><div style="width:7px;height:7px;border-radius:50%;background:#e2dfd4"></div><div class="ghost grow" style="height:4px"></div></div>
+                </div>
+              </div>
+              <div class="b" style="padding:7px"><div class="lbl">Items</div><div class="row" style="margin-top:3px"><div class="ghost" style="width:22px;height:22px;border-radius:5px"></div><div class="ghost grow" style="height:5px"></div></div></div>
+            </div>
+            <div class="col grow" style="width:40%">
+              <div class="b" style="padding:6px"><div class="lbl">Ship to</div><div class="ghost" style="height:4px;width:80%;margin:3px 0"></div><div class="ghost" style="height:4px;width:60%"></div></div>
+              <div class="b" style="padding:6px"><div class="lbl">Payment</div><div class="ghost" style="height:4px;width:70%;margin:3px 0"></div><div style="display:inline-block;background:var(--brand-800);color:#fff;font-size:6px;padding:1px 5px;border-radius:99px">PAID · UPI</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/orders/:id</div>
+          <h3>Order tracking</h3>
+          <p>Order number, five-step visual timeline (pending → confirmed → packed → shipped → delivered), item list, address &amp; payment cards, and self-service cancellation that restocks items instantly.</p>
+        </div>
+      </div>
+
+      <!-- AUTH -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="row" style="align-items:stretch">
+            <div class="col grow" style="width:48%;justify-content:center">
+              <div class="h1 serif">One account for six curated worlds.</div>
+              <div class="ghost" style="height:4px;width:70%;margin-top:4px"></div>
+              <div class="ghost" style="height:4px;width:55%"></div>
+              <div class="b" style="margin-top:6px;padding:5px;border:1px dashed var(--gold-500)">
+                <div class="lbl" style="color:var(--gold-500)">Demo accounts</div>
+                <div class="ghost" style="height:6px;width:80%;margin-top:2px"></div>
+              </div>
+            </div>
+            <div class="b grow" style="padding:8px">
+              <div class="row" style="background:#f1efe8;border-radius:999px;padding:2px;margin-bottom:6px">
+                <div style="flex:1;text-align:center;background:#fff;border-radius:999px;font-size:6px;padding:2px;font-weight:700">Sign in</div>
+                <div style="flex:1;text-align:center;font-size:6px;padding:2px;color:var(--ink-faint)">Register</div>
+              </div>
+              <div class="lbl">Email</div>
+              <div style="height:9px;border:1px solid var(--line);border-radius:5px;margin:2px 0 5px"></div>
+              <div class="lbl">Password</div>
+              <div style="height:9px;border:1px solid var(--line);border-radius:5px;margin:2px 0 6px"></div>
+              <div style="height:10px;background:var(--brand-800);border-radius:999px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/auth</div>
+          <h3>Sign in / Register</h3>
+          <p>Split layout with tabbed form, inline validation errors, show/hide password, and one-click demo-account fill buttons. JWT session persisted in localStorage; admins get an extra dashboard link.</p>
+        </div>
+      </div>
+
+      <!-- ADMIN DASHBOARD -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="row">
+            <div class="col" style="width:22%">
+              <div style="background:var(--brand-800);color:#fff;border-radius:6px;padding:4px 6px;font-size:7px;font-weight:700">Overview</div>
+              <div class="b" style="padding:4px 6px;font-size:7px;color:var(--ink-faint)">Orders</div>
+              <div class="b" style="padding:4px 6px;font-size:7px;color:var(--ink-faint)">Products</div>
+              <div class="b" style="padding:4px 6px;font-size:7px;color:var(--ink-faint)">Customers</div>
+            </div>
+            <div class="col grow">
+              <div class="row">
+                <div class="b grow" style="padding:5px"><div class="lbl">Revenue</div><div class="h2" style="color:var(--brand-800)">₹4.5L</div></div>
+                <div class="b grow" style="padding:5px"><div class="lbl">Orders</div><div class="h2">31</div></div>
+                <div class="b grow" style="padding:5px"><div class="lbl">Customers</div><div class="h2">3</div></div>
+              </div>
+              <div class="b" style="padding:6px">
+                <svg viewBox="0 0 200 46" style="width:100%;display:block">
+                  <path d="M4 38 L28 30 L52 33 L76 20 L100 26 L124 14 L148 18 L172 8 L196 12 L196 42 L4 42 Z" fill="#2a6b56" opacity="0.15"/>
+                  <path d="M4 38 L28 30 L52 33 L76 20 L100 26 L124 14 L148 18 L172 8 L196 12" fill="none" stroke="#2a6b56" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="row">
+                <div class="b grow" style="padding:5px"><div class="lbl">Top sellers</div><div style="height:4px;background:var(--brand-600);border-radius:3px;width:90%;margin-top:3px"></div><div style="height:4px;background:var(--brand-300);border-radius:3px;width:60%;margin-top:3px"></div></div>
+                <div class="b grow" style="padding:5px"><div class="lbl" style="color:var(--gold-500)">Low stock</div><div class="ghost" style="height:4px;width:75%;margin-top:3px"></div><div class="ghost" style="height:4px;width:55%;margin-top:3px"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/admin</div>
+          <h3>Admin — Overview</h3>
+          <p>Sidebar console. Stat cards (revenue, orders, customers, AOV), 30-day SVG revenue chart with hover tooltips, recent orders, top-sellers bars, low-stock alerts and a category revenue split bar.</p>
+        </div>
+      </div>
+
+      <!-- ADMIN ORDERS -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="row" style="margin-bottom:5px">
+            <span class="badge slate" style="font-size:6px">All</span><span class="badge" style="font-size:6px;background:var(--brand-800)">Confirmed</span><span class="badge slate" style="font-size:6px">Shipped</span><span class="badge slate" style="font-size:6px">Delivered</span>
+          </div>
+          <div class="b" style="padding:0;overflow:hidden">
+            <div style="background:var(--brand-50);padding:4px 6px;display:flex;gap:6px"><span class="lbl" style="flex:1">Order</span><span class="lbl" style="width:22%">Total</span><span class="lbl" style="width:18%">Status</span><span class="lbl" style="width:16%"></span></div>
+            <div style="padding:4px 6px;display:flex;gap:6px;align-items:center;border-top:1px solid var(--line)"><span class="h2" style="flex:1;color:var(--brand-800);font-size:7px">MRD-8H2K</span><span style="font-size:7px;width:22%">₹2,499</span><span class="badge gold" style="font-size:5px;width:18%">Packed</span><span style="font-size:6px;background:var(--brand-800);color:#fff;border-radius:99px;padding:1px 5px">→ Shipped</span></div>
+            <div style="padding:4px 6px;display:flex;gap:6px;align-items:center;border-top:1px solid var(--line)"><span class="h2" style="flex:1;color:var(--brand-800);font-size:7px">MRD-P9QX</span><span style="font-size:7px;width:22%">₹62,990</span><span class="badge" style="font-size:5px;width:18%">Shipped</span><span style="font-size:6px;background:var(--brand-800);color:#fff;border-radius:99px;padding:1px 5px">→ Delivered</span></div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/admin/orders</div>
+          <h3>Admin — Orders</h3>
+          <p>Searchable table with status filter chips. One-click status progression moves each order down the warehouse pipeline; cancellations automatically return stock.</p>
+        </div>
+      </div>
+
+      <!-- ADMIN PRODUCTS -->
+      <div class="screen">
+        <div class="shot wf">
+          <div class="row" style="margin-bottom:5px;justify-content:space-between;align-items:center">
+            <div style="width:50%;height:9px;border:1px solid var(--line);border-radius:999px;background:#fff"></div>
+            <div style="background:var(--brand-800);color:#fff;font-size:6px;padding:2px 7px;border-radius:999px">+ Add product</div>
+          </div>
+          <div class="b" style="padding:0;overflow:hidden">
+            <div style="padding:4px 6px;display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--line)"><div class="ghost" style="width:20px;height:20px;border-radius:5px"></div><div class="col grow"><div class="ghost" style="height:5px;width:75%"></div><div class="ghost" style="height:4px;width:40%"></div></div><span style="font-size:7px">₹2,499</span><span class="badge" style="font-size:5px">Live</span></div>
+            <div style="padding:4px 6px;display:flex;gap:6px;align-items:center"><div class="ghost" style="width:20px;height:20px;border-radius:5px"></div><div class="col grow"><div class="ghost" style="height:5px;width:65%"></div><div class="ghost" style="height:4px;width:35%"></div></div><span style="font-size:7px">₹1,299</span><span class="badge slate" style="font-size:5px">Hidden</span></div>
+          </div>
+          <div class="b" style="margin-top:5px;border:1.5px dashed var(--brand-300);padding:6px">
+            <div class="lbl" style="color:var(--brand-600)">Modal editor</div>
+            <div class="row" style="margin-top:3px"><div style="height:8px;border:1px solid var(--line);border-radius:4px;flex:1"></div><div style="height:8px;border:1px solid var(--line);border-radius:4px;flex:1"></div></div>
+          </div>
+        </div>
+        <div class="info">
+          <div class="route">/admin/products</div>
+          <h3>Admin — Products</h3>
+          <p>Full CRUD: searchable paginated table with thumbnails, stock highlighting, live/hidden toggle, and a modal editor for creating or editing products (name, brand, category, price, stock, featured).</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========================= USER JOURNEY ========================= -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">03 · How it flows</p>
+    <h2 class="serif">Customer journey</h2>
+    <div class="flow">
+      <span class="step">Browse / search</span><span class="arrow">→</span>
+      <span class="step">Product page</span><span class="arrow">→</span>
+      <span class="step">Cart + coupon</span><span class="arrow">→</span>
+      <span class="step hl">Checkout (server verifies)</span><span class="arrow">→</span>
+      <span class="step">Order success</span><span class="arrow">→</span>
+      <span class="step">Track / cancel</span>
+    </div>
+    <h2 class="serif" style="margin-top:26px">Admin journey</h2>
+    <div class="flow">
+      <span class="step">Sign in as admin</span><span class="arrow">→</span>
+      <span class="step">Dashboard KPIs</span><span class="arrow">→</span>
+      <span class="step hl">Advance order status</span><span class="arrow">→</span>
+      <span class="step">Manage products</span><span class="arrow">→</span>
+      <span class="step">Watch stock alerts</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= ARCHITECTURE ========================= -->
+<section style="border-bottom:none">
+  <div class="wrap">
+    <p class="eyebrow">04 · Under the hood</p>
+    <h2 class="serif">Architecture &amp; data model</h2>
+    <p class="sub">Classic three-tier MERN. The frontend never trusts its own prices — every order is re-priced and stock-checked on the API before anything is saved.</p>
+
+    <div class="arch">
+      <div class="box">
+        <h3>Frontend — React 18 + Vite</h3>
+        <ul>
+          <li>Tailwind CSS design system (evergreen/gold tokens)</li>
+          <li>TanStack Query for server state, Zustand for cart/auth</li>
+          <li>React Router — 13 routes incl. protected /admin</li>
+          <li>Hand-rolled SVG charts (zero chart libraries)</li>
+        </ul>
+      </div>
+      <div class="box mid">
+        <h3>Backend — Express + MongoDB</h3>
+        <ul>
+          <li>JWT auth, bcrypt hashing, role-based guards</li>
+          <li>Zod request validation + central error handler</li>
+          <li>Pricing engine: coupons, free-shipping threshold, COD</li>
+          <li>Atomic stock reservation with rollback</li>
+          <li>Helmet, CORS allowlist, rate limiting</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="models" style="margin-top:26px">
+      <div class="model"><div class="head">User <span>collection</span></div><ul><li><b>name</b>, email, password*</li><li><b>role</b>: user | admin</li><li><b>addresses</b>: [ … ]</li><li>phone, lastLoginAt</li></ul></div>
+      <div class="model"><div class="head">Product <span>collection</span></div><ul><li><b>name</b>, slug, brand</li><li><b>price</b>, compareAtPrice</li><li><b>stock</b>, sold, sku</li><li>images, colors, sizes</li><li>rating, specs, tags</li><li>featured, isActive</li></ul></div>
+      <div class="model"><div class="head">Category <span>collection</span></div><ul><li><b>name</b>, slug, tagline</li><li>icon, accent, image</li><li>virtual productCount</li></ul></div>
+      <div class="model"><div class="head">Order <span>collection</span></div><ul><li><b>orderNumber</b> MRD-…</li><li>items[] (snapshot)</li><li>shippingAddress</li><li>payment: method+status</li><li>pricing {sub, ship, disc}</li><li>orderStatus + timeline[]</li></ul></div>
+      <div class="model"><div class="head">Coupon <span>collection</span></div><ul><li><b>code</b>, type, value</li><li>minOrder, maxDiscount</li><li>active, expiresAt</li></ul></div>
+    </div>
+
+    <div class="card" style="margin-top:26px">
+      <h3>Deployment topology</h3>
+      <div class="flow" style="margin:14px 0 0">
+        <span class="step">Browser</span><span class="arrow">→</span>
+        <span class="step hl">Vercel · React app</span><span class="arrow">→ HTTPS →</span>
+        <span class="step hl">Render · Express API</span><span class="arrow">→</span>
+        <span class="step">MongoDB Atlas (free)</span>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint);margin-top:12px">
+        <code>render.yaml</code> + <code>vercel.json</code> ship in the repo; full 20-minute walkthrough in
+        <code>docs/DEPLOYMENT.md</code>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Meridian · Full-Stack Development Project · React · Express · MongoDB · Node.js<br/>
+  Live demo: <b>localhost:5173</b> (storefront) · <b>localhost:5000/api/health</b> (API)
+</footer>
+
+</body>
+</html>
