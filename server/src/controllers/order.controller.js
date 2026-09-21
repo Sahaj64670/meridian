@@ -5,6 +5,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { send } from '../utils/respond.js';
 import { calculatePricing } from '../services/pricing.js';
+import { razorpayEnabled } from '../services/razorpay.js';
 
 /** POST /api/coupons/validate — used by the cart to preview a discount. */
 export const validateCoupon = asyncHandler(async (req, res) => {
@@ -82,7 +83,10 @@ export const createOrder = asyncHandler(async (req, res) => {
     })),
     shippingAddress,
     paymentMethod,
-    paymentStatus: paymentMethod === 'cod' ? 'pending' : 'paid',
+    // With Razorpay configured, online payments stay `pending` until the
+    // gateway signature is verified; without keys they're simulated as paid.
+    paymentStatus:
+      paymentMethod === 'cod' ? 'pending' : razorpayEnabled() ? 'pending' : 'paid',
     orderStatus: 'confirmed',
     pricing,
     couponCode: pricing.couponCode,

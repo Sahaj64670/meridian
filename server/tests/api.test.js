@@ -142,6 +142,12 @@ test('full order flow: login → place order → prices computed server-side', a
   assert.equal(after.body.data.stock, product.stock - 2);
 });
 
+test('payments config reports simulated mode when no gateway keys', async () => {
+  const res = await api('/api/payments/config');
+  assert.equal(res.status, 200);
+  assert.equal(res.body.data.enabled, false);
+});
+
 test('unknown routes return a 404 JSON body', async () => {
   const res = await api('/api/nope');
   assert.equal(res.status, 404);

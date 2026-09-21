@@ -94,6 +94,18 @@ export const updateOrderStatusSchema = z.object({
   note: z.string().trim().max(200).optional().default(''),
 });
 
+/* ------------------------------ payments ----------------------------- */
+export const createPaymentOrderSchema = z.object({
+  orderId: z.string().min(1),
+});
+
+export const verifyPaymentSchema = z.object({
+  orderId: z.string().min(1),
+  razorpay_order_id: z.string().min(1),
+  razorpay_payment_id: z.string().min(1),
+  razorpay_signature: z.string().min(1),
+});
+
 /* ------------------------------- users ------------------------------- */
 export const updateProfileSchema = z.object({
   name: z.string().trim().min(2).max(60).optional(),

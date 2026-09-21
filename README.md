@@ -15,7 +15,10 @@ admin console, and a design system built around a deep-evergreen & gold palette.
 - **Catalog** — search, category / price / rating / brand filters, 6 sort modes, pagination
 - **Product page** — gallery, colour & size variants, specs table, stock urgency, related items
 - **Cart** — quantity steppers, coupons (`MERIDIAN10`, `FIRST200`, `FREESHIP`, `WELCOME50`), free-shipping progress
-- **Checkout** — validated Indian address form, 4 payment methods (simulated), server-side price re-verification
+- **Checkout** — validated Indian address form, UPI / card / netbanking / COD
+- **Payments** — Razorpay test-mode integration (checkout popup, HMAC signature
+  verification server-side, “Pay now” retry for pending orders) with a graceful
+  simulated fallback when no keys are configured
 - **Orders** — list, detail page with delivery timeline, self-service cancellation (restocks items)
 - **Auth** — register / login with JWT, hashed passwords, role-aware UI
 

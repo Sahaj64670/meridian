@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, CreditCard, Banknote, Smartphone, Landmark, ChevronRight, Loader2 } from 'lucide-react';
 import { api, formatINR } from '../lib/api';
+import { payForOrder } from '../lib/pay';
 import { useCartStore } from '../store/cart';
 import { useAuthStore } from '../store/auth';
 import { toast } from '../store/toast';
@@ -26,6 +27,12 @@ export default function Checkout() {
   const [placing, setPlacing] = useState(false);
   const [errors, setErrors] = useState({});
   const [saved, setSaved] = useState(null);
+
+  const payCfg = useQuery({
+    queryKey: ['payments-config'],
+    queryFn: () => api('/payments/config'),
+  });
+  const razorpayOn = payCfg.data?.data?.enabled;
 
   useEffect(() => {
     if (!token) navigate('/auth?next=/checkout');
@@ -62,9 +69,30 @@ export default function Checkout() {
           saveAddress: true,
         },
       });
+      const order = res.data;
+
+      // Online payment via Razorpay (test mode) when configured.
+      if (payment !== 'cod') {
+        try {
+          await payForOrder(order, {
+            name: form.fullName,
+            email: user?.email || '',
+            contact: form.phone,
+          });
+          toast.success('Payment verified 🎉');
+        } catch (payErr) {
+          // Gateway cancelled/failed — the order is saved, stock reserved,
+          // and the customer can retry from the order page.
+          clear();
+          toast.error(payErr.message || 'Payment cancelled — order saved as pending');
+          navigate(`/orders/${order._id}`);
+          return;
+        }
+      }
+
       clear();
       toast.success('Order placed 🎉');
-      navigate(`/order-success/${res.data._id}`);
+      navigate(`/order-success/${order._id}`);
     } catch (err) {
       setErrors(err.details || {});
       toast.error(err.message);
@@ -143,7 +171,9 @@ export default function Checkout() {
               ))}
             </div>
             <p className="mt-4 rounded-xl bg-gold-400/15 px-4 py-3 text-xs font-medium text-brand-900">
-              Demo mode — payments are simulated, no real money moves. UPI/card orders are marked “paid” instantly.
+              {razorpayOn
+                ? 'Payments run through Razorpay in TEST mode — use the test UPI/card options in the popup. No real money moves, and every payment is verified server-side.'
+                : 'Demo mode — gateway keys not configured, so online payments are simulated and marked “paid” instantly. (Add Razorpay test keys on the server to enable the real test gateway.)'}
             </p>
           </section>
         </div>

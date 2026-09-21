@@ -23,4 +23,8 @@ export const env = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // Optional: when set, checkout uses the real Razorpay test gateway.
+  // When absent, non-COD orders are auto-marked paid (simulated mode).
+  razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
 };

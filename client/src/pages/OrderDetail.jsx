@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MapPin, CreditCard, ChevronRight, XCircle, CheckCircle2 } from 'lucide-react';
 import { api, formatINR, formatDate } from '../lib/api';
+import { payForOrder } from '../lib/pay';
 import { PageLoader, Badge } from '../components/ui';
 import { STATUS_TONES } from './Orders';
+import { useAuthStore } from '../store/auth';
 import { toast } from '../store/toast';
 import { clsx } from 'clsx';
 
@@ -12,6 +15,8 @@ const FLOW = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
 export default function OrderDetail() {
   const { id } = useParams();
   const qc = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const [paying, setPaying] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ['order', id],
     queryFn: () => api(`/orders/${id}`),
@@ -36,6 +41,26 @@ export default function OrderDetail() {
   const cancelled = order.orderStatus === 'cancelled';
   const currentIdx = FLOW.indexOf(order.orderStatus);
   const canCancel = ['pending', 'confirmed', 'packed'].includes(order.orderStatus);
+  const needsPayment =
+    order.paymentStatus === 'pending' && order.paymentMethod !== 'cod' && !cancelled;
+
+  const payNow = async () => {
+    setPaying(true);
+    try {
+      await payForOrder(order, {
+        name: order.shippingAddress.fullName,
+        email: user?.email || '',
+        contact: order.shippingAddress.phone,
+      });
+      toast.success('Payment verified 🎉');
+      qc.invalidateQueries({ queryKey: ['order', id] });
+      qc.invalidateQueries({ queryKey: ['my-orders'] });
+    } catch (err) {
+      toast.error(err.message || 'Payment cancelled');
+    } finally {
+      setPaying(false);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -133,6 +158,11 @@ export default function OrderDetail() {
             </dl>
           </div>
 
+          {needsPayment && (
+            <button onClick={payNow} disabled={paying} className="btn-gold w-full py-3 text-sm">
+              {paying ? 'Opening gateway…' : `Pay ${formatINR(order.pricing.total)} now`}
+            </button>
+          )}
           {canCancel && (
             <button onClick={cancel} className="btn-outline w-full border-red-200 py-3 text-sm text-red-600 hover:border-red-400 hover:bg-red-50 hover:text-red-700">
               Cancel this order
