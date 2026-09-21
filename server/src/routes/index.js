@@ -5,7 +5,6 @@ import * as authController from '../controllers/user.controller.js';
 import * as productController from '../controllers/product.controller.js';
 import * as categoryController from '../controllers/category.controller.js';
 import * as orderController from '../controllers/order.controller.js';
-import * as paymentController from '../controllers/payment.controller.js';
 import * as adminController from '../controllers/admin.controller.js';
 
 import { protect, authorize, optionalAuth } from '../middleware/auth.js';
@@ -21,8 +20,6 @@ import {
   updateProfileSchema,
   addressSchema,
   couponSchema,
-  createPaymentOrderSchema,
-  verifyPaymentSchema,
 } from '../validators/schemas.js';
 
 const router = Router();
@@ -63,11 +60,6 @@ router.get('/products/:slug/related', productController.getRelated);
 router.post('/products', protect, authorize('admin'), validate(productSchema), productController.createProduct);
 router.patch('/products/:id', protect, authorize('admin'), validate(productUpdateSchema), productController.updateProduct);
 router.delete('/products/:id', protect, authorize('admin'), productController.deleteProduct);
-
-/* ------------------------------ payments ----------------------------- */
-router.get('/payments/config', paymentController.config);
-router.post('/payments/create-order', protect, validate(createPaymentOrderSchema), paymentController.createOrder);
-router.post('/payments/verify', protect, validate(verifyPaymentSchema), paymentController.verify);
 
 /* ------------------------------- orders ------------------------------ */
 router.post('/coupons/validate', validate(couponSchema), orderController.validateCoupon);

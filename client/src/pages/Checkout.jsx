@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, CreditCard, Banknote, Smartphone, Landmark, ChevronRight, Loader2 } from 'lucide-react';
+import { MapPin, Banknote, Smartphone, ChevronRight, Loader2 } from 'lucide-react';
 import { api, formatINR } from '../lib/api';
-import { payForOrder } from '../lib/pay';
+import UpiPanel from '../components/UpiPanel';
 import { useCartStore } from '../store/cart';
 import { useAuthStore } from '../store/auth';
 import { toast } from '../store/toast';
 import { clsx } from 'clsx';
 
 const PAYMENT_METHODS = [
-  { id: 'upi', label: 'UPI', sub: 'GPay, PhonePe, Paytm', icon: Smartphone },
-  { id: 'card', label: 'Credit / debit card', sub: 'Visa, Mastercard, RuPay', icon: CreditCard },
-  { id: 'netbanking', label: 'Netbanking', sub: 'All major banks', icon: Landmark },
+  { id: 'upi', label: 'UPI — scan QR & pay', sub: 'GPay, PhonePe, Paytm, any UPI app', icon: Smartphone },
   { id: 'cod', label: 'Cash on delivery', sub: 'Pay when it arrives', icon: Banknote },
 ];
 
@@ -24,15 +22,10 @@ export default function Checkout() {
 
   const [form, setForm] = useState(EMPTY);
   const [payment, setPayment] = useState('upi');
+  const [utr, setUtr] = useState('');
   const [placing, setPlacing] = useState(false);
   const [errors, setErrors] = useState({});
   const [saved, setSaved] = useState(null);
-
-  const payCfg = useQuery({
-    queryKey: ['payments-config'],
-    queryFn: () => api('/payments/config'),
-  });
-  const razorpayOn = payCfg.data?.data?.enabled;
 
   useEffect(() => {
     if (!token) navigate('/auth?next=/checkout');
@@ -56,6 +49,10 @@ export default function Checkout() {
 
   const placeOrder = async (e) => {
     e.preventDefault();
+    if (payment === 'upi' && !/^\d{6,20}$/.test(utr)) {
+      toast.error('Scan the QR, pay, then enter the UTR number from your UPI app');
+      return;
+    }
     setPlacing(true);
     setErrors({});
     try {
@@ -65,34 +62,14 @@ export default function Checkout() {
           items: items.map((i) => ({ product: i.product._id, qty: i.qty, size: i.size, color: i.color })),
           shippingAddress: form,
           paymentMethod: payment,
+          utr: payment === 'upi' ? utr : '',
           couponCode: coupon?.code || '',
           saveAddress: true,
         },
       });
-      const order = res.data;
-
-      // Online payment via Razorpay (test mode) when configured.
-      if (payment !== 'cod') {
-        try {
-          await payForOrder(order, {
-            name: form.fullName,
-            email: user?.email || '',
-            contact: form.phone,
-          });
-          toast.success('Payment verified 🎉');
-        } catch (payErr) {
-          // Gateway cancelled/failed — the order is saved, stock reserved,
-          // and the customer can retry from the order page.
-          clear();
-          toast.error(payErr.message || 'Payment cancelled — order saved as pending');
-          navigate(`/orders/${order._id}`);
-          return;
-        }
-      }
-
       clear();
       toast.success('Order placed 🎉');
-      navigate(`/order-success/${order._id}`);
+      navigate(`/order-success/${res.data._id}`);
     } catch (err) {
       setErrors(err.details || {});
       toast.error(err.message);
@@ -170,10 +147,17 @@ export default function Checkout() {
                 </button>
               ))}
             </div>
+
+            {payment === 'upi' && (
+              <div className="mt-5 rounded-2xl bg-brand-50/60 p-4 animate-rise">
+                <UpiPanel amount={total} utr={utr} onUtrChange={setUtr} />
+              </div>
+            )}
+
             <p className="mt-4 rounded-xl bg-gold-400/15 px-4 py-3 text-xs font-medium text-brand-900">
-              {razorpayOn
-                ? 'Payments run through Razorpay in TEST mode — use the test UPI/card options in the popup. No real money moves, and every payment is verified server-side.'
-                : 'Demo mode — gateway keys not configured, so online payments are simulated and marked “paid” instantly. (Add Razorpay test keys on the server to enable the real test gateway.)'}
+              {payment === 'upi'
+                ? 'Pay the exact amount, paste the UTR from your UPI app, and place the order. We confirm the credit in our bank app and your order moves to “confirmed”.'
+                : 'Keep the exact amount ready — our delivery partner carries change for up to ₹200.'}
             </p>
           </section>
         </div>

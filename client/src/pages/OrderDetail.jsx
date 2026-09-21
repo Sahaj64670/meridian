@@ -3,10 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MapPin, CreditCard, ChevronRight, XCircle, CheckCircle2 } from 'lucide-react';
 import { api, formatINR, formatDate } from '../lib/api';
-import { payForOrder } from '../lib/pay';
+import UpiPanel from '../components/UpiPanel';
 import { PageLoader, Badge } from '../components/ui';
 import { STATUS_TONES } from './Orders';
-import { useAuthStore } from '../store/auth';
 import { toast } from '../store/toast';
 import { clsx } from 'clsx';
 
@@ -15,8 +14,7 @@ const FLOW = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
 export default function OrderDetail() {
   const { id } = useParams();
   const qc = useQueryClient();
-  const user = useAuthStore((s) => s.user);
-  const [paying, setPaying] = useState(false);
+  const [showQr, setShowQr] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ['order', id],
     queryFn: () => api(`/orders/${id}`),
@@ -41,26 +39,8 @@ export default function OrderDetail() {
   const cancelled = order.orderStatus === 'cancelled';
   const currentIdx = FLOW.indexOf(order.orderStatus);
   const canCancel = ['pending', 'confirmed', 'packed'].includes(order.orderStatus);
-  const needsPayment =
-    order.paymentStatus === 'pending' && order.paymentMethod !== 'cod' && !cancelled;
-
-  const payNow = async () => {
-    setPaying(true);
-    try {
-      await payForOrder(order, {
-        name: order.shippingAddress.fullName,
-        email: user?.email || '',
-        contact: order.shippingAddress.phone,
-      });
-      toast.success('Payment verified 🎉');
-      qc.invalidateQueries({ queryKey: ['order', id] });
-      qc.invalidateQueries({ queryKey: ['my-orders'] });
-    } catch (err) {
-      toast.error(err.message || 'Payment cancelled');
-    } finally {
-      setPaying(false);
-    }
-  };
+  const upiPending =
+    order.paymentMethod === 'upi' && order.paymentStatus === 'pending' && !cancelled;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -149,8 +129,11 @@ export default function OrderDetail() {
           <div className="card p-6 animate-rise" style={{ animationDelay: '120ms' }}>
             <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-semibold"><CreditCard size={17} className="text-brand-700" /> Payment</h2>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between"><dt className="text-ink-faint">Method</dt><dd className="font-semibold uppercase">{order.paymentMethod}</dd></div>
+              <div className="flex justify-between"><dt className="text-ink-faint">Method</dt><dd className="font-semibold uppercase">{order.paymentMethod === 'upi' ? 'UPI (QR)' : order.paymentMethod}</dd></div>
               <div className="flex justify-between"><dt className="text-ink-faint">Status</dt><dd><Badge tone={order.paymentStatus === 'paid' ? 'brand' : 'slate'}>{order.paymentStatus}</Badge></dd></div>
+              {order.paymentRef && (
+                <div className="flex justify-between"><dt className="text-ink-faint">UTR ref</dt><dd className="font-mono text-xs font-semibold">{order.paymentRef}</dd></div>
+              )}
               <div className="flex justify-between border-t border-ink/10 pt-2"><dt className="text-ink-faint">Subtotal</dt><dd>{formatINR(order.pricing.subtotal)}</dd></div>
               {order.pricing.discount > 0 && <div className="flex justify-between text-brand-700"><dt>Discount</dt><dd>− {formatINR(order.pricing.discount)}</dd></div>}
               <div className="flex justify-between"><dt className="text-ink-faint">Shipping</dt><dd>{order.pricing.shipping === 0 ? 'FREE' : formatINR(order.pricing.shipping)}</dd></div>
@@ -158,10 +141,22 @@ export default function OrderDetail() {
             </dl>
           </div>
 
-          {needsPayment && (
-            <button onClick={payNow} disabled={paying} className="btn-gold w-full py-3 text-sm">
-              {paying ? 'Opening gateway…' : `Pay ${formatINR(order.pricing.total)} now`}
-            </button>
+          {upiPending && (
+            <div className="card border-l-4 border-l-gold-400 p-6 animate-rise" style={{ animationDelay: '120ms' }}>
+              <h2 className="font-display text-lg font-semibold">UPI payment under verification</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                UTR submitted: <span className="font-mono font-bold text-ink">{order.paymentRef || '—'}</span>.
+                We confirm the credit in our bank app, then your order moves to <strong>confirmed</strong>.
+              </p>
+              <button onClick={() => setShowQr(!showQr)} className="btn-outline mt-4 px-5 py-2.5 text-sm">
+                {showQr ? 'Hide QR codes' : 'Show payment QR codes'}
+              </button>
+              {showQr && (
+                <div className="mt-4">
+                  <UpiPanel amount={order.pricing.total} />
+                </div>
+              )}
+            </div>
           )}
           {canCancel && (
             <button onClick={cancel} className="btn-outline w-full border-red-200 py-3 text-sm text-red-600 hover:border-red-400 hover:bg-red-50 hover:text-red-700">

@@ -139,6 +139,16 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   order.orderStatus = orderStatus;
   order.timeline.push({ status: orderStatus, note: note || `Status set to ${orderStatus}`, at: new Date() });
 
+  // Confirming a UPI order means the owner checked the bank app — mark it paid.
+  if (orderStatus === 'confirmed' && order.paymentMethod === 'upi' && order.paymentStatus !== 'paid') {
+    order.paymentStatus = 'paid';
+    order.timeline.push({
+      status: orderStatus,
+      note: `UPI payment verified (UTR ${order.paymentRef || 'n/a'})`,
+      at: new Date(),
+    });
+  }
+
   if (orderStatus === 'delivered') {
     order.deliveredAt = new Date();
     order.paymentStatus = 'paid';

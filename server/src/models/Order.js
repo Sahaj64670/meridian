@@ -34,7 +34,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: { type: String, enum: ['cod', 'upi', 'card', 'netbanking'], default: 'cod' },
     paymentStatus: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
-    /** Razorpay payment id (pay_...) once the gateway payment is verified. */
+    /** UPI transaction reference (UTR) submitted by the customer. */
     paymentRef: { type: String, default: '' },
     orderStatus: { type: String, enum: ORDER_STATUSES, default: 'pending', index: true },
 

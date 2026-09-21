@@ -123,6 +123,7 @@ test('full order flow: login → place order → prices computed server-side', a
         city: 'Kharar', state: 'Punjab', pincode: '140301',
       },
       paymentMethod: 'upi',
+      utr: '123456789012',
       couponCode: '',
       saveAddress: false,
     }),
@@ -134,18 +135,35 @@ test('full order flow: login → place order → prices computed server-side', a
   // Regression: pricing must be real numbers computed server-side (was NaN).
   assert.equal(o.pricing.subtotal, product.price * 2);
   assert.ok(Number.isFinite(o.pricing.total));
-  assert.equal(o.paymentStatus, 'paid'); // UPI is treated as paid
-  assert.equal(o.orderStatus, 'confirmed');
+  assert.equal(o.paymentStatus, 'pending'); // UPI QR = manual verification
+  assert.equal(o.paymentRef, '123456789012'); // UTR recorded
+  assert.equal(o.orderStatus, 'pending');
 
   // Stock must have been decremented.
   const after = await api(`/api/products/${product.slug}`);
   assert.equal(after.body.data.stock, product.stock - 2);
 });
 
-test('payments config reports simulated mode when no gateway keys', async () => {
-  const res = await api('/api/payments/config');
-  assert.equal(res.status, 200);
-  assert.equal(res.body.data.enabled, false);
+test('UPI orders require a valid UTR number', async () => {
+  const login = await api('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email: 'test@example.com', password: 'Password123' }),
+  });
+  const products = await api('/api/products?limit=1');
+  const res = await api('/api/orders', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${login.body.data.token}` },
+    body: JSON.stringify({
+      items: [{ product: products.body.data[0]._id, qty: 1 }],
+      shippingAddress: {
+        fullName: 'Test User', phone: '9812345670', line1: '1 Test Street',
+        city: 'Kharar', state: 'Punjab', pincode: '140301',
+      },
+      paymentMethod: 'upi',
+      utr: 'not-a-utr',
+    }),
+  });
+  assert.equal(res.status, 400);
 });
 
 test('unknown routes return a 404 JSON body', async () => {

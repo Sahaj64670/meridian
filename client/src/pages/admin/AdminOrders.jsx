@@ -77,7 +77,12 @@ export default function AdminOrders() {
                 <tr><td colSpan={7} className="px-5 py-12 text-center text-brand-700"><Spinner /></td></tr>
               ) : (data?.data || []).map((o) => (
                 <tr key={o._id} className="transition hover:bg-brand-50/30">
-                  <td className="px-5 py-3.5 font-bold text-brand-800">{o.orderNumber}</td>
+                  <td className="px-5 py-3.5 font-bold text-brand-800">
+                    {o.orderNumber}
+                    {o.paymentMethod === 'upi' && o.paymentRef && (
+                      <p className="text-[11px] font-medium text-ink-faint">UTR {o.paymentRef}</p>
+                    )}
+                  </td>
                   <td className="px-5 py-3.5">
                     <p className="font-semibold">{o.user?.name || '—'}</p>
                     <p className="text-xs text-ink-faint">{o.shippingAddress.city}, {o.shippingAddress.state}</p>

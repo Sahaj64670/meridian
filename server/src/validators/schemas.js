@@ -84,7 +84,9 @@ export const cartItemSchema = z.object({
 export const createOrderSchema = z.object({
   items: z.array(cartItemSchema).min(1, 'Your cart is empty'),
   shippingAddress: addressSchema,
-  paymentMethod: z.enum(['cod', 'upi', 'card', 'netbanking']).default('cod'),
+  paymentMethod: z.enum(['cod', 'upi']).default('cod'),
+  /** UPI transaction reference (UTR) — required for UPI payments. */
+  utr: z.string().trim().max(30).optional().default(''),
   couponCode: z.string().trim().toUpperCase().optional().default(''),
   saveAddress: z.coerce.boolean().default(true),
 });
@@ -92,18 +94,6 @@ export const createOrderSchema = z.object({
 export const updateOrderStatusSchema = z.object({
   orderStatus: z.enum(['pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled']),
   note: z.string().trim().max(200).optional().default(''),
-});
-
-/* ------------------------------ payments ----------------------------- */
-export const createPaymentOrderSchema = z.object({
-  orderId: z.string().min(1),
-});
-
-export const verifyPaymentSchema = z.object({
-  orderId: z.string().min(1),
-  razorpay_order_id: z.string().min(1),
-  razorpay_payment_id: z.string().min(1),
-  razorpay_signature: z.string().min(1),
 });
 
 /* ------------------------------- users ------------------------------- */

@@ -52,6 +52,17 @@ export default function OrderSuccess() {
               </ul>
             </div>
 
+            {order.paymentMethod === 'upi' && order.paymentStatus === 'pending' && (
+              <div className="mx-auto mt-6 max-w-md rounded-2xl bg-gold-400/15 p-4 text-left text-sm text-brand-900">
+                <p className="font-bold">One last step — complete your UPI payment</p>
+                <p className="mt-1 leading-relaxed">
+                  Open the order page for our QR codes (UPI: <span className="font-mono font-semibold">sahajs290@okicici</span> or{' '}
+                  <span className="font-mono font-semibold">luckydewangan022@okaxis</span>), pay {formatINR(order.pricing.total)}, and we'll
+                  verify your UTR <span className="font-mono font-semibold">{order.paymentRef}</span> shortly.
+                </p>
+              </div>
+            )}
+
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to={`/orders/${order._id}`} className="btn-outline px-6 py-2.5 text-sm">Track this order</Link>
               <Link to="/shop" className="btn-primary px-6 py-2.5 text-sm">Continue shopping <ArrowRight size={15} /></Link>

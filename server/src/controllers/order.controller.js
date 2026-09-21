@@ -5,7 +5,6 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { send } from '../utils/respond.js';
 import { calculatePricing } from '../services/pricing.js';
-import { razorpayEnabled } from '../services/razorpay.js';
 
 /** POST /api/coupons/validate — used by the cart to preview a discount. */
 export const validateCoupon = asyncHandler(async (req, res) => {
@@ -26,7 +25,12 @@ export const validateCoupon = asyncHandler(async (req, res) => {
 
 /** POST /api/orders */
 export const createOrder = asyncHandler(async (req, res) => {
-  const { items, shippingAddress, paymentMethod, couponCode, saveAddress } = req.body;
+  const { items, shippingAddress, paymentMethod, couponCode, saveAddress, utr } = req.body;
+
+  // UPI orders must carry the transaction reference the customer got after paying.
+  if (paymentMethod === 'upi' && !/^\d{6,20}$/.test(utr || '')) {
+    throw ApiError.badRequest('Enter the UTR / transaction number from your UPI app');
+  }
 
   // 1. Resolve every product from the DB — prices come from us, never the client.
   const ids = items.map((i) => i.product);
@@ -83,14 +87,18 @@ export const createOrder = asyncHandler(async (req, res) => {
     })),
     shippingAddress,
     paymentMethod,
-    // With Razorpay configured, online payments stay `pending` until the
-    // gateway signature is verified; without keys they're simulated as paid.
-    paymentStatus:
-      paymentMethod === 'cod' ? 'pending' : razorpayEnabled() ? 'pending' : 'paid',
-    orderStatus: 'confirmed',
+    // UPI (QR) and COD are real money movements — the admin confirms
+    // them from the dashboard once the bank app shows the credit.
+    paymentStatus: 'pending',
+    paymentRef: paymentMethod === 'upi' ? utr : '',
+    orderStatus: paymentMethod === 'upi' ? 'pending' : 'confirmed',
     pricing,
     couponCode: pricing.couponCode,
-    timeline: [{ status: 'confirmed', note: 'Order confirmed', at: new Date() }],
+    timeline: [
+      paymentMethod === 'upi'
+        ? { status: 'pending', note: `Order placed — awaiting UPI verification (UTR ${utr})`, at: new Date() }
+        : { status: 'confirmed', note: 'Order confirmed', at: new Date() },
+    ],
   });
 
   // 5. Optionally remember the address on the profile.
