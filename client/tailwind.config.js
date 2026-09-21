@@ -4,35 +4,37 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand: deep evergreen + warm parchment — calm, premium, trustworthy.
+        // Brand: marketplace blue — familiar, trustworthy, Flipkart/Amazon territory.
         brand: {
-          50: '#f0f7f4',
-          100: '#d9ece4',
-          200: '#b5d9cb',
-          300: '#88bfa9',
-          400: '#58a186',
-          500: '#3a866c',
-          600: '#2a6b56',
-          700: '#235647',
-          800: '#1f453a',
-          900: '#1b3a31',
-          950: '#0c211b',
+          50: '#eef5ff',
+          100: '#d9e8ff',
+          200: '#bcd7ff',
+          300: '#8ebdff',
+          400: '#599aff',
+          500: '#327ef7',
+          600: '#2874f0',
+          700: '#1f5fd0',
+          800: '#1e4ea8',
+          900: '#1d4286',
+          950: '#14294f',
         },
+        // CTA orange — add-to-cart / buy-now energy (kept the `gold` key so
+        // existing class names keep working).
         gold: {
-          300: '#f5d78a',
-          400: '#eec25f',
-          500: '#d9a53c',
-          600: '#b8842c',
+          300: '#ffc24d',
+          400: '#ff9f00',
+          500: '#fb641b',
+          600: '#e2540e',
         },
         ink: {
-          DEFAULT: '#131a17',
-          soft: '#3f4a45',
-          faint: '#75817b',
+          DEFAULT: '#212121',
+          soft: '#4a5560',
+          faint: '#878787',
         },
-        paper: '#faf8f3',
+        paper: '#f1f3f6',
       },
       fontFamily: {
-        display: ['"Fraunces"', 'Georgia', 'serif'],
+        display: ['"Sora"', '"Inter"', 'system-ui', 'sans-serif'],
         sans: ['"Inter"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {

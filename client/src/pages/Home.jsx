@@ -33,7 +33,7 @@ export default function Home() {
           className="absolute inset-0 opacity-[0.16]"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 20% 30%, #eec25f 0, transparent 34%), radial-gradient(circle at 85% 75%, #3a866c 0, transparent 40%)',
+              'radial-gradient(circle at 20% 30%, #ff9f00 0, transparent 34%), radial-gradient(circle at 85% 75%, #327ef7 0, transparent 40%)',
           }}
         />
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:py-24">
@@ -113,7 +113,7 @@ export default function Home() {
             </Link>
           ))}
           {!categories.data &&
-            Array.from({ length: 6 }).map((_, i) => <div key={i} className="skeleton aspect-[4/3]" />)}
+            Array.from({ length: 8 }).map((_, i) => <div key={i} className="skeleton aspect-[4/3]" />)}
         </div>
       </section>
 
@@ -143,7 +143,7 @@ export default function Home() {
           <div
             className="absolute inset-0 opacity-20"
             style={{
-              backgroundImage: 'radial-gradient(circle at 15% 20%, #eec25f 0, transparent 30%), radial-gradient(circle at 90% 80%, #58a186 0, transparent 35%)',
+              backgroundImage: 'radial-gradient(circle at 15% 20%, #ff9f00 0, transparent 30%), radial-gradient(circle at 90% 80%, #327ef7 0, transparent 35%)',
             }}
           />
           <div className="relative">

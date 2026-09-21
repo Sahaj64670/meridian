@@ -63,7 +63,7 @@ const SalesChart = ({ series }) => {
         <path d={line} fill="none" stroke="#2a6b56" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {pts.map(([x, y], i) =>
           series[i].revenue > 0 ? (
-            <circle key={i} cx={x} cy={y} r="3.5" fill="#faf8f3" stroke="#2a6b56" strokeWidth="2">
+            <circle key={i} cx={x} cy={y} r="3.5" fill="#f1f3f6" stroke="#2874f0" strokeWidth="2">
               <title>{`${series[i].label}: ${formatINR(series[i].revenue)} · ${series[i].orders} orders`}</title>
             </circle>
           ) : null
@@ -176,13 +176,13 @@ export default function Dashboard() {
           <div className="flex h-3.5 w-full overflow-hidden rounded-full">
             {d.categorySplit.map((c, i) => {
               const total = d.categorySplit.reduce((s, x) => s + x.revenue, 0) || 1;
-              const colors = ['#2a6b56', '#d9a53c', '#58a186', '#b5d9cb', '#1f453a', '#eec25f'];
+              const colors = ['#2874f0', '#fb641b', '#327ef7', '#ff9f00', '#1d4286', '#ffc24d'];
               return <div key={c._id} title={`${c._id}: ${formatINR(c.revenue)}`} style={{ width: `${(c.revenue / total) * 100}%`, backgroundColor: colors[i % colors.length] }} />;
             })}
           </div>
           <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-ink-soft">
             {d.categorySplit.map((c, i) => {
-              const colors = ['#2a6b56', '#d9a53c', '#58a186', '#b5d9cb', '#1f453a', '#eec25f'];
+              const colors = ['#2874f0', '#fb641b', '#327ef7', '#ff9f00', '#1d4286', '#ffc24d'];
               return (
                 <span key={c._id} className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />

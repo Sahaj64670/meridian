@@ -52,6 +52,7 @@ export const categories = [
     accent: 'teal',
     order: 6,
   },
+  // NB: Toys & Games + Grocery & Gourmet are added from more-products.js
 ];
 
 export const products = [

@@ -22,7 +22,7 @@ const Wordmark = () => (
       <svg viewBox="0 0 32 32" className="h-5 w-5">
         <path
           d="M8 22V10l8 7 8-7v12"
-          stroke="#eec25f"
+          stroke="#ff9f00"
           strokeWidth="2.6"
           fill="none"
           strokeLinecap="round"

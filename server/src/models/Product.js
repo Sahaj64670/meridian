@@ -18,6 +18,8 @@ const productSchema = new mongoose.Schema(
     sku: { type: String, unique: true, sparse: true, trim: true },
 
     images: [{ url: String, alt: String }],
+    /** Short showcase clip shown on the product page (free stock, CC-licensed). */
+    video: { type: String, default: '' },
     colors: [{ name: String, hex: String }],
     sizes: [{ type: String, trim: true }],
 

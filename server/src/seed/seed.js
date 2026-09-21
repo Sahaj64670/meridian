@@ -1,11 +1,15 @@
 /**
  * `npm run seed` — wipes the dev database and loads the Meridian demo dataset:
- *   1 admin, 3 customers, 6 categories, 42 products, coupons, ~30 demo orders.
+ *   1 admin, 3 customers, 8 categories, 120 products, coupons, ~30 demo orders.
+ *
+ * Every product gets a unique photo (looked up by search term in media.json)
+ * and a short showcase video from the per-category video pool.
  *
  * The demo orders are generated with a seeded PRNG so everyone gets the same
  * dashboard numbers (and a nice-looking 30-day revenue chart).
  */
 import mongoose from 'mongoose';
+import { readFileSync } from 'node:fs';
 import { connectDB, disconnectDB } from '../config/db.js';
 import { env } from '../config/env.js';
 
@@ -15,7 +19,14 @@ import Product from '../models/Product.js';
 import Order from '../models/Order.js';
 import Coupon from '../models/Coupon.js';
 
-import { categories, products, coupons } from './data.js';
+import { categories as baseCategories, products as baseProducts, coupons } from './data.js';
+import { newCategories, moreProducts, photoQuery, videoPool } from './more-products.js';
+
+const categories = [...baseCategories, ...newCategories];
+const products = [...baseProducts, ...moreProducts];
+
+/** Unique photo per product, harvested from Openverse (see media.json). */
+const media = JSON.parse(readFileSync(new URL('./media.json', import.meta.url), 'utf-8'));
 
 /* Deterministic PRNG so the demo data is identical every run. */
 const mulberry32 = (seed) => () => {
@@ -79,6 +90,8 @@ async function seed() {
     'Beauty & Care': '/images/products/beauty-care.jpg',
     'Sports & Outdoors': '/images/products/sports.jpg',
     'Books & Stationery': '/images/products/books.jpg',
+    'Toys & Games': '/images/products/toys.jpg',
+    'Grocery & Gourmet': '/images/products/grocery.jpg',
   };
   const cats = await Category.create(
     categories.map((c) => ({ ...c, image: CAT_IMAGE[c.name] }))
@@ -87,7 +100,7 @@ async function seed() {
 
   /* ------------------------------ products ----------------------------- */
   console.log('  … creating products');
-  // Every product ships with a curated studio photo per category.
+  // Fallback image per category if a photo query ever misses.
   const IMAGE_BY_CATEGORY = {
     Electronics: '/images/products/electronics.jpg',
     Fashion: '/images/products/fashion.jpg',
@@ -95,13 +108,23 @@ async function seed() {
     'Beauty & Care': '/images/products/beauty-care.jpg',
     'Sports & Outdoors': '/images/products/sports.jpg',
     'Books & Stationery': '/images/products/books.jpg',
+    'Toys & Games': '/images/products/toys.jpg',
+    'Grocery & Gourmet': '/images/products/grocery.jpg',
   };
-  const docs = products.map((p) => ({
-    ...p,
-    category: catByName.get(p.category)._id,
-    sku: `MRD-${p.category.slice(0, 3).toUpperCase()}-${String(Math.floor(rand() * 9000) + 1000)}`,
-    images: [{ url: IMAGE_BY_CATEGORY[p.category], alt: p.name }],
-  }));
+  const videoCursor = {};
+  const docs = products.map((p) => {
+    const query = p.photo || photoQuery[p.name] || p.tags?.[0] || p.name;
+    const pool = videoPool[p.category] || [];
+    const cursor = (videoCursor[p.category] = (videoCursor[p.category] || 0) + 1) - 1;
+    const { photo, ...rest } = p;
+    return {
+      ...rest,
+      category: catByName.get(p.category)._id,
+      sku: `MRD-${p.category.slice(0, 3).toUpperCase()}-${String(Math.floor(rand() * 9000) + 1000)}`,
+      images: [{ url: media[query] || IMAGE_BY_CATEGORY[p.category], alt: p.name }],
+      video: pool.length ? pool[cursor % pool.length] : '',
+    };
+  });
   const created = await Product.create(docs);
   console.log(`    ✔ ${created.length} products`);
 

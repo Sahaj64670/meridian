@@ -22,7 +22,7 @@
     @apply btn bg-brand-800 text-white hover:bg-brand-900 hover:shadow-lift active:scale-[0.98];
   }
   .btn-gold {
-    @apply btn bg-gold-400 text-brand-950 hover:bg-gold-300 hover:shadow-lift active:scale-[0.98];
+    @apply btn bg-gold-500 text-white hover:bg-gold-400 hover:shadow-lift active:scale-[0.98];
   }
   .btn-outline {
     @apply btn border border-ink/15 bg-white text-ink hover:border-brand-600 hover:text-brand-800;
@@ -46,7 +46,7 @@
     @apply border-brand-700 bg-brand-800 text-white hover:text-white;
   }
   .skeleton {
-    @apply rounded-xl bg-[linear-gradient(110deg,#ece9e1_8%,#f7f5ef_18%,#ece9e1_33%)] bg-[length:200%_100%] animate-shimmer;
+    @apply rounded-xl bg-[linear-gradient(110deg,#e4e7eb_8%,#f1f3f6_18%,#e4e7eb_33%)] bg-[length:200%_100%] animate-shimmer;
   }
 }
 
@@ -56,9 +56,9 @@
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d6d2c8;
+  background: #c4cad2;
   border-radius: 8px;
-  border: 2px solid #faf8f3;
+  border: 2px solid #f1f3f6;
 }
 ::-webkit-scrollbar-track {
   background: transparent;

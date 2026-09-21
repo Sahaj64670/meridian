@@ -16,9 +16,11 @@ admin console, and a design system built around a deep-evergreen & gold palette.
 - **Product page** — gallery, colour & size variants, specs table, stock urgency, related items
 - **Cart** — quantity steppers, coupons (`MERIDIAN10`, `FIRST200`, `FREESHIP`, `WELCOME50`), free-shipping progress
 - **Checkout** — validated Indian address form, UPI / card / netbanking / COD
-- **Payments** — Razorpay test-mode integration (checkout popup, HMAC signature
-  verification server-side, “Pay now” retry for pending orders) with a graceful
-  simulated fallback when no keys are configured
+- **Payments** — real-world Indian flow: **UPI QR** (two store accounts with
+  copyable UPI IDs, UTR capture & admin verification) + **Cash on Delivery**.
+  No gateway keys or paid services required
+- **Catalogue** — 8 categories × 15 products (120 items), every product with a
+  unique photo and a short showcase video (Photo/Video toggle on product pages)
 - **Orders** — list, detail page with delivery timeline, self-service cancellation (restocks items)
 - **Auth** — register / login with JWT, hashed passwords, role-aware UI
 
