@@ -23,4 +23,7 @@ export const env = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // Gmail SMTP for order emails — optional; without them emails are skipped.
+  mailUser: process.env.MAIL_USER || '',
+  mailPass: process.env.MAIL_PASS || '',
 };

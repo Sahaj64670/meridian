@@ -66,6 +66,9 @@ Open **http://localhost:5173** — the storefront is live.
 | Role     | Email                    | Password      |
 | -------- | ------------------------ | ------------- |
 | Admin    | `admin@meridian.store`   | `Admin@123`   |
+| Admin    | `sahajsaxena2122@gmail.com` | `Admin@123` |
+| Admin    | `luckydewangan022@gmail.com` | `Admin@123` |
+| Admin    | `nitinankita09@gmail.com` | `Admin@123` |
 | Customer | `customer@meridian.store`| `Customer@123`|
 
 Sign in as the admin and open **Account → Admin dashboard** to see the analytics console

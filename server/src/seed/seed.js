@@ -46,6 +46,13 @@ const CUSTOMERS = [
   { name: 'Rohan Mehta', email: 'rohan@example.com', password: 'Customer@123' },
 ];
 
+/** Extra admin handles for the team — same demo password. */
+const ADMINS = [
+  { name: 'Sahaj Saxena', email: 'sahajsaxena2122@gmail.com', password: 'Admin@123' },
+  { name: 'Lucky Dewangan', email: 'luckydewangan022@gmail.com', password: 'Admin@123' },
+  { name: 'Ankita', email: 'nitinankita09@gmail.com', password: 'Admin@123' },
+];
+
 const ADDRESSES = [
   { fullName: 'Aarav Sharma', phone: '9812045673', line1: '14, Sector 7A, Green Enclave', line2: 'Near City Mall', city: 'Kharar', state: 'Punjab', pincode: '140301', isDefault: true },
   { fullName: 'Priya Nair', phone: '9988776655', line1: 'B-702, Marina Heights', line2: 'Marine Drive', city: 'Kochi', state: 'Kerala', pincode: '682016', isDefault: true },
@@ -79,6 +86,9 @@ async function seed() {
     password: process.env.ADMIN_PASSWORD || 'Admin@123',
     role: 'admin',
   });
+  const teamAdmins = await User.create(
+    ADMINS.map((a) => ({ ...a, role: 'admin' }))
+  );
   const users = await User.create(CUSTOMERS);
 
   /* ----------------------------- categories ---------------------------- */
@@ -213,6 +223,7 @@ async function seed() {
   const revenue = orders.reduce((s, o) => s + o.pricing.total, 0);
   console.log(`\n  ✔ Seed complete`);
   console.log(`    Admin    : ${admin.email} / ${process.env.ADMIN_PASSWORD || 'Admin@123'}`);
+  for (const a of teamAdmins) console.log(`    Admin    : ${a.email} / Admin@123`);
   console.log(`    Customer : ${users[0].email} / Customer@123`);
   console.log(`    Products : ${created.length} across ${cats.length} categories`);
   console.log(`    Orders   : ${orders.length} (₹${revenue.toLocaleString('en-IN')} in demo revenue)\n`);

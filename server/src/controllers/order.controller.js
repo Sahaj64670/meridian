@@ -5,6 +5,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { send } from '../utils/respond.js';
 import { calculatePricing } from '../services/pricing.js';
+import { sendOrderConfirmation } from '../services/mailer.js';
 
 /** POST /api/coupons/validate — used by the cart to preview a discount. */
 export const validateCoupon = asyncHandler(async (req, res) => {
@@ -112,6 +113,14 @@ export const createOrder = asyncHandler(async (req, res) => {
       user.addresses.push(shippingAddress);
       await user.save();
     }
+  }
+
+  // 6. Email the confirmation to the customer's login email (never blocks
+  //    the order if SMTP is down/unconfigured).
+  try {
+    await sendOrderConfirmation(order, { name: req.user.name, email: req.user.email });
+  } catch (e) {
+    console.error('[mailer] confirmation failed:', e.message);
   }
 
   await send(res, {

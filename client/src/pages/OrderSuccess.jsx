@@ -1,11 +1,13 @@
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { CheckCircle2, Package, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Package, ArrowRight, Mail } from 'lucide-react';
 import { api, formatINR, formatDate } from '../lib/api';
 import { PageLoader } from '../components/ui';
+import { useAuthStore } from '../store/auth';
 
 export default function OrderSuccess() {
   const { id } = useParams();
+  const user = useAuthStore((s) => s.user);
   const { data, isLoading } = useQuery({
     queryKey: ['order', id],
     queryFn: () => api(`/orders/${id}`),
@@ -36,6 +38,16 @@ export default function OrderSuccess() {
               <div><p className="text-xs text-ink-faint">Payment</p><p className="font-semibold uppercase">{order.paymentMethod}</p></div>
               <div><p className="text-xs text-ink-faint">Total paid</p><p className="font-bold">{formatINR(order.pricing.total)}</p></div>
             </div>
+
+            {user?.email && (
+              <div className="mx-auto mt-5 flex max-w-md items-start gap-2.5 rounded-xl bg-gold-400/15 px-4 py-3 text-left text-xs text-brand-900">
+                <Mail size={15} className="mt-0.5 shrink-0 text-gold-600" />
+                <p>
+                  A confirmation email with your items, total and delivery address has been sent to{' '}
+                  <span className="font-bold">{user.email}</span> — the same email you log in with.
+                </p>
+              </div>
+            )}
 
             <div className="mt-6 rounded-2xl bg-brand-50/70 p-5 text-left">
               <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-800">

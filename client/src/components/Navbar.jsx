@@ -96,13 +96,13 @@ export default function Navbar() {
           >
             Shop all
           </NavLink>
-          {categories.slice(0, 4).map((c) => (
+          {categories.map((c) => (
             <NavLink
               key={c.slug}
               to={`/shop?category=${c.slug}`}
               className={({ isActive }) =>
                 clsx(
-                  'rounded-full px-3.5 py-2 text-sm font-medium transition',
+                  'rounded-full px-3 py-2 text-sm font-medium transition',
                   isActive ? 'bg-brand-800 text-white' : 'text-ink-soft hover:bg-ink/5 hover:text-ink'
                 )
               }
