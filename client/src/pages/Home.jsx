@@ -4,6 +4,15 @@ import { ArrowRight, Sparkles, Tag } from 'lucide-react';
 import { api } from '../lib/api';
 import { SectionHeading, ProductSkeleton } from '../components/ui';
 import ProductCard from '../components/ProductCard';
+import Reveal from '../components/Reveal';
+
+const OFFERS = [
+  'Free shipping over ₹1,499',
+  'COD available across India',
+  '7-day easy returns',
+  'UPI QR payments',
+  'First order? Code MERIDIAN10',
+];
 
 const CATEGORY_ICON_TINTS = {
   indigo: 'from-indigo-100 to-indigo-50 text-indigo-700',
@@ -27,6 +36,21 @@ export default function Home() {
 
   return (
     <div>
+      {/* ---------------------------- OFFERS TICKER ------------------------ */}
+      <div className="overflow-hidden bg-gold-400 py-1.5">
+        <div className="animate-marquee flex min-w-max items-center">
+          {[...OFFERS, ...OFFERS].map((t, i) => (
+            <span
+              key={i}
+              className="flex items-center text-[11px] font-bold uppercase tracking-widest text-brand-950"
+            >
+              <span className="px-6">{t}</span>
+              <span className="text-brand-950/40">✦</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* ------------------------------- HERO ------------------------------ */}
       <section className="relative overflow-hidden bg-brand-950">
         <div
@@ -50,7 +74,7 @@ export default function Home() {
               marketplace, eight categories, zero clutter.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/shop" className="btn-gold px-7 py-3 text-sm">
+              <Link to="/shop" className="btn-gold shine px-7 py-3 text-sm">
                 Shop the collection <ArrowRight size={16} />
               </Link>
               <Link
@@ -84,6 +108,7 @@ export default function Home() {
 
       {/* ---------------------------- CATEGORIES --------------------------- */}
       <section className="mx-auto max-w-7xl px-4 py-16">
+        <Reveal>
         <SectionHeading
           eyebrow="Browse by category"
           title="Eight worlds, one doorstep"
@@ -97,7 +122,7 @@ export default function Home() {
               className="group relative overflow-hidden rounded-2xl shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift animate-rise"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <img src={c.image} alt={c.name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <img src={c.image} alt={c.name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-950/85 via-brand-950/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-4">
                 <span
@@ -115,11 +140,13 @@ export default function Home() {
           {!categories.data &&
             Array.from({ length: 8 }).map((_, i) => <div key={i} className="skeleton aspect-[4/3]" />)}
         </div>
+        </Reveal>
       </section>
 
       {/* ----------------------------- FEATURED ---------------------------- */}
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4">
+          <Reveal>
           <SectionHeading
             eyebrow="Handpicked"
             title="Featured this week"
@@ -134,11 +161,13 @@ export default function Home() {
             {featured.data?.data?.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
             {!featured.data && Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)}
           </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ------------------------------- BANNER ---------------------------- */}
       <section className="mx-auto max-w-7xl px-4 py-16">
+        <Reveal>
         <div className="relative overflow-hidden rounded-3xl bg-brand-900 px-6 py-12 text-center md:py-16">
           <div
             className="absolute inset-0 opacity-20"
@@ -155,15 +184,17 @@ export default function Home() {
             <p className="mt-3 text-sm text-brand-100/80">
               Valid on orders above ₹999 · Free shipping over ₹1,499 · COD available
             </p>
-            <Link to="/shop" className="btn-gold mt-7 px-8 py-3 text-sm">
+            <Link to="/shop" className="btn-gold shine mt-7 px-8 py-3 text-sm">
               Start shopping <ArrowRight size={16} />
             </Link>
           </div>
         </div>
+        </Reveal>
       </section>
 
       {/* ------------------------------ NEW IN ----------------------------- */}
       <section className="mx-auto max-w-7xl px-4 pb-8">
+        <Reveal>
         <SectionHeading
           eyebrow="Fresh arrivals"
           title="New in the catalog"
@@ -177,6 +208,7 @@ export default function Home() {
           {newest.data?.data?.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
           {!newest.data && Array.from({ length: 4 }).map((_, i) => <ProductSkeleton key={i} />)}
         </div>
+        </Reveal>
       </section>
     </div>
   );
