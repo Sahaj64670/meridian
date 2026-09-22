@@ -50,10 +50,15 @@ export default {
           from: { backgroundPosition: '200% 0' },
           to: { backgroundPosition: '-200% 0' },
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
       },
       animation: {
         rise: 'rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
         shimmer: 'shimmer 1.6s linear infinite',
+        float: 'float 4s ease-in-out infinite',
       },
     },
   },

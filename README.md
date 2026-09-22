@@ -15,12 +15,12 @@ admin console, and a design system built around a deep-evergreen & gold palette.
 - **Catalog** — search, category / price / rating / brand filters, 6 sort modes, pagination
 - **Product page** — gallery, colour & size variants, specs table, stock urgency, related items
 - **Cart** — quantity steppers, coupons (`MERIDIAN10`, `FIRST200`, `FREESHIP`, `WELCOME50`), free-shipping progress
-- **Checkout** — validated Indian address form, UPI / card / netbanking / COD
+- **Checkout** — validated Indian address form, UPI QR or Cash on Delivery
 - **Payments** — real-world Indian flow: **UPI QR** (two store accounts with
   copyable UPI IDs, UTR capture & admin verification) + **Cash on Delivery**.
   No gateway keys or paid services required
 - **Catalogue** — 8 categories × 15 products (120 items), every product with a
-  unique photo and a short showcase video (Photo/Video toggle on product pages)
+  unique, openly-licensed photo
 - **Orders** — list, detail page with delivery timeline, self-service cancellation (restocks items)
 - **Auth** — register / login with JWT, hashed passwords, role-aware UI
 

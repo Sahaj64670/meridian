@@ -46,8 +46,8 @@ export default function Home() {
               <span className="text-gold-400 italic">delivered beautifully.</span>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-brand-100/85">
-              Electronics, fashion, home, beauty, sport and books — one considered marketplace,
-              six categories, zero clutter.
+              Electronics, fashion, home, beauty, sport, books, toys and grocery — one considered
+              marketplace, eight categories, zero clutter.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/shop" className="btn-gold px-7 py-3 text-sm">
@@ -61,9 +61,9 @@ export default function Home() {
               </Link>
             </div>
             <div className="mt-10 flex flex-wrap gap-x-8 gap-y-2 text-xs text-brand-200/70">
-              <span>★★★★★ 12,400+ verified reviews</span>
               <span>Free shipping over ₹1,499</span>
               <span>7-day returns</span>
+              <span>UPI & COD available</span>
             </div>
           </div>
 
@@ -74,9 +74,9 @@ export default function Home() {
               alt="Curated Meridian products"
               className="relative aspect-[4/3] w-full rounded-3xl object-cover shadow-lift ring-1 ring-white/20"
             />
-            <div className="absolute -bottom-5 -left-4 rounded-2xl bg-white px-5 py-3.5 shadow-lift md:-left-8">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-ink-faint">This week</p>
-              <p className="font-display text-lg font-semibold text-brand-800">₹4.5L+ in orders</p>
+            <div className="absolute -bottom-5 -left-4 rounded-2xl bg-white px-5 py-3.5 shadow-lift md:-left-8 animate-float">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-ink-faint">Payments</p>
+              <p className="font-display text-lg font-semibold text-brand-800">UPI QR & COD</p>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 py-16">
         <SectionHeading
           eyebrow="Browse by category"
-          title="Six worlds, one doorstep"
+          title="Eight worlds, one doorstep"
           subtitle="Each category is curated like its own boutique — focused ranges, honest prices."
         />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">

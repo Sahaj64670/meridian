@@ -16,13 +16,13 @@ import { useCartStore } from '../store/cart';
 import { useAuthStore } from '../store/auth';
 import { clsx } from 'clsx';
 
-const Wordmark = () => (
+const Wordmark = ({ light }) => (
   <Link to="/" className="flex items-center gap-2.5">
-    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-900 shadow-card">
+    <span className={`flex h-9 w-9 items-center justify-center rounded-xl shadow-card ${light ? 'bg-white' : 'bg-brand-900'}`}>
       <svg viewBox="0 0 32 32" className="h-5 w-5">
         <path
           d="M8 22V10l8 7 8-7v12"
-          stroke="#ff9f00"
+          stroke={light ? '#2874f0' : '#ff9f00'}
           strokeWidth="2.6"
           fill="none"
           strokeLinecap="round"
@@ -30,8 +30,8 @@ const Wordmark = () => (
         />
       </svg>
     </span>
-    <span className="font-display text-xl font-bold tracking-tight">
-      Meridian<span className="text-gold-500">.</span>
+    <span className={`font-display text-xl font-bold tracking-tight ${light ? 'text-white' : 'text-ink'}`}>
+      Meridian<span className="text-gold-400">.</span>
     </span>
   </Link>
 );
@@ -67,21 +67,22 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 shadow-card">
       {/* Utility strip */}
-      <div className="bg-brand-900 text-[11px] font-medium tracking-wide text-brand-100">
+      <div className="bg-brand-950 text-[11px] font-medium tracking-wide text-brand-100">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-1.5">
           <span>Free shipping on orders over ₹1,499</span>
           <span className="hidden sm:block">7-day easy returns · COD available</span>
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
-        <button className="btn-ghost -ml-2 p-2 lg:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+      <div className="bg-brand-600">
+        <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-2.5">
+          <button className="btn-ghost -ml-2 p-2 text-white hover:bg-white/10 hover:text-white lg:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
 
-        <Wordmark />
+          <Wordmark light />
 
         <nav className="ml-4 hidden items-center gap-1 lg:flex">
           <NavLink
@@ -89,8 +90,8 @@ export default function Navbar() {
             end
             className={({ isActive }) =>
               clsx(
-                'rounded-full px-3.5 py-2 text-sm font-medium transition',
-                isActive ? 'bg-brand-800 text-white' : 'text-ink-soft hover:bg-ink/5 hover:text-ink'
+                'rounded-full px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white',
+                isActive && 'bg-white/15 text-white'
               )
             }
           >
@@ -102,8 +103,8 @@ export default function Navbar() {
               to={`/shop?category=${c.slug}`}
               className={({ isActive }) =>
                 clsx(
-                  'rounded-full px-3 py-2 text-sm font-medium transition',
-                  isActive ? 'bg-brand-800 text-white' : 'text-ink-soft hover:bg-ink/5 hover:text-ink'
+                  'rounded-full px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white',
+                  isActive && 'bg-white/15 text-white'
                 )
               }
             >
@@ -119,13 +120,13 @@ export default function Navbar() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search products, brands…"
-              className="input rounded-full py-2 pl-10"
+              className="w-full rounded-full border-0 bg-white px-4 py-2 pl-10 text-sm text-ink shadow-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-gold-400"
             />
           </div>
         </form>
 
         <div className="ml-auto flex items-center gap-1 md:ml-3">
-          <Link to="/cart" className="btn-ghost relative p-2.5" aria-label="Cart">
+          <Link to="/cart" className="btn-ghost relative p-2.5 text-white hover:bg-white/10 hover:text-white" aria-label="Cart">
             <ShoppingBag size={20} />
             {count > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold-400 px-1 text-[10px] font-bold text-brand-950">
@@ -136,8 +137,8 @@ export default function Navbar() {
 
           {user ? (
             <div className="relative" ref={menuRef}>
-              <button onClick={() => setMenu(!menu)} className="btn-ghost flex items-center gap-2 p-1.5" aria-label="Account menu">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-800 text-sm font-bold text-white">
+              <button onClick={() => setMenu(!menu)} className="btn-ghost flex items-center gap-2 p-1.5 hover:bg-white/10" aria-label="Account menu">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-bold text-brand-700">
                   {user.name?.[0]?.toUpperCase()}
                 </span>
               </button>
@@ -169,10 +170,11 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            <Link to="/auth" className="btn-primary px-4 py-2 text-sm">
+            <Link to="/auth" className="btn bg-white px-4 py-2 text-sm text-brand-700 hover:bg-brand-50">
               <User size={16} /> Sign in
             </Link>
           )}
+        </div>
         </div>
       </div>
 

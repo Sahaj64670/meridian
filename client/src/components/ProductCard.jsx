@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Check, Play } from 'lucide-react';
+import { ShoppingBag, Check } from 'lucide-react';
 import { useState } from 'react';
 import { Badge, Price, RatingStars } from './ui';
 import { useCartStore } from '../store/cart';
@@ -32,11 +32,6 @@ export default function ProductCard({ product, index = 0 }) {
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
         />
-        {product.video && (
-          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-ink/75 px-2.5 py-1 text-[10px] font-bold tracking-wide text-white backdrop-blur-sm">
-            <Play size={10} /> VIDEO
-          </span>
-        )}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {product.featured && <Badge tone="gold">Bestseller</Badge>}
           {lowStock && <Badge tone="danger">Only {product.stock} left</Badge>}

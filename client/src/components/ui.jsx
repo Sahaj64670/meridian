@@ -46,30 +46,17 @@ export const Price = ({ price, compareAtPrice, size = 'md', className }) => (
   </span>
 );
 
-export const RatingStars = ({ average = 0, count, size = 14, className }) => (
-  <span className={clsx('flex items-center gap-1.5', className)}>
-    <span className="flex text-gold-400">
-      {[1, 2, 3, 4, 5].map((i) => {
-        const fill = Math.min(Math.max(average - i + 1, 0), 1);
-        return (
-          <span key={i} className="relative inline-block" style={{ width: size, height: size }}>
-            <Star size={size} className="absolute inset-0 text-ink/15" fill="currentColor" />
-            {fill > 0 && (
-              <span
-                className="absolute inset-0 overflow-hidden"
-                style={{ width: `${fill * 100}%` }}
-              >
-                <Star size={size} className="text-gold-400" fill="currentColor" />
-              </span>
-            )}
-          </span>
-        );
-      })}
+export const RatingStars = ({ average = 0, count, size = 14, className }) =>
+  count ? (
+    <span className={clsx('flex items-center gap-1.5', className)}>
+      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-1.5 py-0.5 text-xs font-bold text-white">
+        {average.toFixed(1)} <Star size={11} fill="currentColor" />
+      </span>
+      <span className="text-xs text-ink-faint">({count.toLocaleString('en-IN')})</span>
     </span>
-    <span className="text-xs font-semibold text-ink-soft">{average.toFixed(1)}</span>
-    {count !== undefined && <span className="text-xs text-ink-faint">({count.toLocaleString('en-IN')})</span>}
-  </span>
-);
+  ) : (
+    <span className={clsx('text-xs font-medium text-ink-faint', className)}>New arrival</span>
+  );
 
 export const Badge = ({ children, tone = 'brand', className }) => (
   <span

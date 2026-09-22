@@ -1,26 +1,21 @@
 /**
- * `npm run seed` — wipes the dev database and loads the Meridian demo dataset:
- *   1 admin, 3 customers, 8 categories, 120 products, coupons, ~30 demo orders.
+ * `npm run seed` — wipes the database and loads the Meridian catalogue:
+ *   4 admins, 1 customer, 8 categories, 120 products, coupons.
  *
- * Every product gets a unique photo (looked up by search term in media.json)
- * and a short showcase video from the per-category video pool.
- *
- * The demo orders are generated with a seeded PRNG so everyone gets the same
- * dashboard numbers (and a nice-looking 30-day revenue chart).
+ * Every product gets a unique photo (looked up by search term in media.json).
+ * Nothing fake is generated — no fake orders, reviews or sales counters —
+ * so every number you see is real customer activity.
  */
-import mongoose from 'mongoose';
 import { readFileSync } from 'node:fs';
 import { connectDB, disconnectDB } from '../config/db.js';
-import { env } from '../config/env.js';
 
 import User from '../models/User.js';
 import Category from '../models/Category.js';
 import Product from '../models/Product.js';
-import Order from '../models/Order.js';
 import Coupon from '../models/Coupon.js';
 
 import { categories as baseCategories, products as baseProducts, coupons } from './data.js';
-import { newCategories, moreProducts, photoQuery, videoPool } from './more-products.js';
+import { newCategories, moreProducts, photoQuery } from './more-products.js';
 
 const categories = [...baseCategories, ...newCategories];
 const products = [...baseProducts, ...moreProducts];
@@ -37,13 +32,9 @@ const mulberry32 = (seed) => () => {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 };
 const rand = mulberry32(20260921);
-const pick = (arr) => arr[Math.floor(rand() * arr.length)];
-const between = (min, max) => Math.floor(rand() * (max - min + 1)) + min;
 
 const CUSTOMERS = [
   { name: 'Aarav Sharma', email: 'customer@meridian.store', password: 'Customer@123' },
-  { name: 'Priya Nair', email: 'priya@example.com', password: 'Customer@123' },
-  { name: 'Rohan Mehta', email: 'rohan@example.com', password: 'Customer@123' },
 ];
 
 /** Extra admin handles for the team — same demo password. */
@@ -51,20 +42,6 @@ const ADMINS = [
   { name: 'Sahaj Saxena', email: 'sahajsaxena2122@gmail.com', password: 'Admin@123' },
   { name: 'Lucky Dewangan', email: 'luckydewangan022@gmail.com', password: 'Admin@123' },
   { name: 'Ankita', email: 'nitinankita09@gmail.com', password: 'Admin@123' },
-];
-
-const ADDRESSES = [
-  { fullName: 'Aarav Sharma', phone: '9812045673', line1: '14, Sector 7A, Green Enclave', line2: 'Near City Mall', city: 'Kharar', state: 'Punjab', pincode: '140301', isDefault: true },
-  { fullName: 'Priya Nair', phone: '9988776655', line1: 'B-702, Marina Heights', line2: 'Marine Drive', city: 'Kochi', state: 'Kerala', pincode: '682016', isDefault: true },
-  { fullName: 'Rohan Mehta', phone: '9876501234', line1: '221, Indiranagar 100 Feet Road', line2: '', city: 'Bengaluru', state: 'Karnataka', pincode: '560038', isDefault: true },
-];
-
-const STATUS_FLOW = [
-  ['pending'],
-  ['pending', 'confirmed'],
-  ['pending', 'confirmed', 'packed'],
-  ['pending', 'confirmed', 'packed', 'shipped'],
-  ['pending', 'confirmed', 'packed', 'shipped', 'delivered'],
 ];
 
 async function seed() {
@@ -121,18 +98,17 @@ async function seed() {
     'Toys & Games': '/images/products/toys.jpg',
     'Grocery & Gourmet': '/images/products/grocery.jpg',
   };
-  const videoCursor = {};
   const docs = products.map((p) => {
     const query = p.photo || photoQuery[p.name] || p.tags?.[0] || p.name;
-    const pool = videoPool[p.category] || [];
-    const cursor = (videoCursor[p.category] = (videoCursor[p.category] || 0) + 1) - 1;
     const { photo, ...rest } = p;
     return {
       ...rest,
+      // Original store: no fabricated ratings or sales counters.
+      rating: { average: 0, count: 0 },
+      sold: 0,
       category: catByName.get(p.category)._id,
       sku: `MRD-${p.category.slice(0, 3).toUpperCase()}-${String(Math.floor(rand() * 9000) + 1000)}`,
       images: [{ url: media[query] || IMAGE_BY_CATEGORY[p.category], alt: p.name }],
-      video: pool.length ? pool[cursor % pool.length] : '',
     };
   });
   const created = await Product.create(docs);
@@ -142,91 +118,15 @@ async function seed() {
   console.log('  … creating coupons');
   await Coupon.create(coupons);
 
-  /* --------------------------- demo orders ----------------------------- */
-  console.log('  … generating demo orders (last 30 days)');
-  const orders = [];
-  for (let i = 0; i < 30; i++) {
-    const user = pick(users);
-    const itemCount = between(1, 3);
-    const chosen = [];
-    while (chosen.length < itemCount) {
-      const p = pick(created);
-      if (!chosen.some((c) => c.product._id.equals(p._id))) chosen.push({ product: p, qty: between(1, 2) });
-    }
-
-    const subtotal = chosen.reduce((s, c) => s + c.product.price * c.qty, 0);
-    const shipping = subtotal >= 1499 ? 0 : 79;
-    const total = subtotal + shipping;
-
-    const daysAgo = Math.floor(rand() * 30);
-    const createdAt = new Date(Date.now() - daysAgo * 86400000 - between(0, 20) * 3600000);
-    const flow = pick(STATUS_FLOW);
-    const finalStatus = flow[flow.length - 1];
-
-    const timeline = flow.map((status, idx) => ({
-      status,
-      note:
-        status === 'pending'
-          ? 'Order placed'
-          : status === 'confirmed'
-            ? 'Order confirmed'
-            : status === 'packed'
-              ? 'Packed at the warehouse'
-              : status === 'shipped'
-                ? 'Handed to courier'
-                : 'Delivered',
-      at: new Date(createdAt.getTime() + idx * 6 * 3600000),
-    }));
-
-    orders.push({
-      user: user._id,
-      items: chosen.map(({ product, qty }) => ({
-        product: product._id,
-        name: product.name,
-        image: product.images?.[0]?.url || '',
-        price: product.price,
-        qty,
-      })),
-      shippingAddress: pick(ADDRESSES),
-      paymentMethod: pick(['cod', 'upi', 'card', 'netbanking']),
-      paymentStatus: pick(['cod', 'upi', 'card', 'netbanking']) === 'cod' ? 'pending' : 'paid',
-      orderStatus: finalStatus,
-      pricing: { subtotal, shipping, discount: 0, total },
-      timeline,
-      deliveredAt: finalStatus === 'delivered' ? timeline[timeline.length - 1].at : undefined,
-      createdAt,
-      updatedAt: createdAt,
-    });
-  }
-
-  // Bypass default timestamps so createdAt reflects the generated dates.
-  for (const o of orders) {
-    const doc = new Order(undefined, { timestamps: false });
-    doc.set({
-      user: o.user,
-      items: o.items,
-      shippingAddress: o.shippingAddress,
-      paymentMethod: o.paymentMethod,
-      paymentStatus: o.paymentStatus,
-      orderStatus: o.orderStatus,
-      pricing: o.pricing,
-      timeline: o.timeline,
-      deliveredAt: o.deliveredAt,
-      createdAt: o.createdAt,
-      updatedAt: o.updatedAt,
-    });
-    await doc.validate();
-    await doc.save({ timestamps: false });
-  }
-
   /* ------------------------------ summary ------------------------------ */
-  const revenue = orders.reduce((s, o) => s + o.pricing.total, 0);
+  // No fake orders/reviews/sales are generated — the store starts clean and
+  // only real customer activity shows up (and in MongoDB Atlas).
   console.log(`\n  ✔ Seed complete`);
   console.log(`    Admin    : ${admin.email} / ${process.env.ADMIN_PASSWORD || 'Admin@123'}`);
   for (const a of teamAdmins) console.log(`    Admin    : ${a.email} / Admin@123`);
   console.log(`    Customer : ${users[0].email} / Customer@123`);
   console.log(`    Products : ${created.length} across ${cats.length} categories`);
-  console.log(`    Orders   : ${orders.length} (₹${revenue.toLocaleString('en-IN')} in demo revenue)\n`);
+  console.log(`    Orders   : none seeded — only real orders will exist\n`);
 
   await disconnectDB();
 }

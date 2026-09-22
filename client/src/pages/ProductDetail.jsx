@@ -10,8 +10,6 @@ import {
   ChevronRight,
   Minus,
   Plus,
-  Play,
-  Camera,
 } from 'lucide-react';
 import { api, formatINR } from '../lib/api';
 import { Badge, Price, RatingStars, QtyStepper, PageLoader } from '../components/ui';
@@ -39,7 +37,6 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState('');
   const [color, setColor] = useState(product?.colors?.[0]?.name || '');
-  const [mediaTab, setMediaTab] = useState('photo');
 
   const activeColor = color || product?.colors?.[0]?.name || '';
   const activeSize = size || product?.sizes?.[0] || '';
@@ -79,45 +76,12 @@ export default function ProductDetail() {
       <div className="grid gap-10 lg:grid-cols-2">
         {/* Gallery */}
         <div className="animate-rise">
-          {product.video && (
-            <div className="mb-3 flex gap-2">
-              {[
-                { id: 'photo', label: 'Photo', icon: Camera },
-                { id: 'video', label: 'Video', icon: Play },
-              ].map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setMediaTab(id)}
-                  className={clsx(
-                    'inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition',
-                    mediaTab === id ? 'bg-brand-800 text-white shadow-card' : 'bg-white text-ink-soft hover:text-brand-800 border border-ink/10'
-                  )}
-                >
-                  <Icon size={13} /> {label}
-                </button>
-              ))}
-            </div>
-          )}
           <div className="card relative overflow-hidden">
-            {mediaTab === 'video' && product.video ? (
-              <video
-                key={product.video}
-                src={product.video}
-                poster={product.images?.[0]?.url}
-                controls
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="aspect-square w-full bg-black object-cover"
-              />
-            ) : (
-              <img
-                src={product.images?.[0]?.url || '/images/hero.jpg'}
-                alt={product.name}
-                className="aspect-square w-full object-cover"
-              />
-            )}
+            <img
+              src={product.images?.[0]?.url || '/images/hero.jpg'}
+              alt={product.name}
+              className="aspect-square w-full object-cover"
+            />
             <div className="absolute left-4 top-4 flex flex-col gap-2">
               {product.featured && <Badge tone="gold">Bestseller</Badge>}
               {product.discountPercent > 0 && <Badge tone="brand">{product.discountPercent}% off</Badge>}
