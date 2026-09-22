@@ -26,4 +26,5 @@ export const env = {
   // Gmail SMTP for order emails — optional; without them emails are skipped.
   mailUser: process.env.MAIL_USER || '',
   mailPass: process.env.MAIL_PASS || '',
+  brevoKey: process.env.BREVO_KEY || '',
 };

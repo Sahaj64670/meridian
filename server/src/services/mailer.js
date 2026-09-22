@@ -2,10 +2,16 @@ import nodemailer from 'nodemailer';
 import { env } from '../config/env.js';
 
 /**
- * Order-confirmation emails over Gmail SMTP.
- * Configure MAIL_USER + MAIL_PASS (a Gmail "app password") on the server to
- * enable real delivery. Without them the app still works — emails are just
- * logged to the server console instead of sent.
+ * Order-confirmation emails.
+ *
+ * Render's FREE tier blocks outbound SMTP ports (25/465/587), so Gmail SMTP
+ * can never work there. Production therefore sends through Brevo's HTTPS
+ * API (port 443 — never blocked): set BREVO_KEY (free plan, 300 mails/day)
+ * and keep MAIL_USER as the verified sender address.
+ *
+ * Local development without BREVO_KEY falls back to Gmail SMTP when
+ * MAIL_USER + MAIL_PASS (app password) are set; otherwise emails are just
+ * logged to the console and the order flow is unaffected.
  */
 let transporter = null;
 if (env.mailUser && env.mailPass) {
@@ -93,11 +99,35 @@ export async function sendOrderConfirmation(order, user) {
     html,
   };
 
-  if (!transporter) {
-    console.log(`[mailer] SMTP not configured — skipping email to ${user.email} (${order.orderNumber})`);
-    return { sent: false };
+  if (env.brevoKey) {
+    // HTTPS transport — works on Render's free tier (SMTP ports are blocked).
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': env.brevoKey,
+        'content-type': 'application/json',
+        accept: 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: 'Meridian Store', email: env.mailUser || 'no-reply@meridian.store' },
+        to: [{ email: user.email, name: user.name || '' }],
+        subject: envelope.subject,
+        htmlContent: envelope.html,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Brevo HTTP ${res.status} — ${(await res.text()).slice(0, 200)}`);
+    }
+    console.log(`[mailer] order confirmation sent to ${user.email} via Brevo (${order.orderNumber})`);
+    return { sent: true };
   }
-  const info = await transporter.sendMail(envelope);
-  console.log(`[mailer] order confirmation sent to ${user.email}: ${info.messageId}`);
-  return { sent: true, messageId: info.messageId };
+
+  if (transporter) {
+    const info = await transporter.sendMail(envelope);
+    console.log(`[mailer] order confirmation sent to ${user.email}: ${info.messageId}`);
+    return { sent: true, messageId: info.messageId };
+  }
+
+  console.log(`[mailer] not configured — skipping email to ${user.email} (${order.orderNumber})`);
+  return { sent: false };
 }

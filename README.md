@@ -135,7 +135,10 @@ Run the test suite: `npm test` (spins up an isolated in-memory MongoDB).
 Full walkthrough in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — in short:
 
 1. **Database** — free MongoDB Atlas cluster → copy connection string
-2. **API** — deploy `server/` to Render (`render.yaml` blueprint), set `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL`
+2. **API** — deploy `server/` to Render (`render.yaml` blueprint), set `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL`.
+   For real order-confirmation emails add `BREVO_KEY` (free Brevo.com API key — Render's free tier blocks
+   Gmail SMTP ports) and `MAIL_USER` (the verified Brevo sender address). Without them the store still
+   works; emails are logged to the console instead of sent.
 3. **Frontend** — deploy `client/` to Vercel, set `VITE_API_URL` to the Render URL
 
 ## 🧰 Tech stack
