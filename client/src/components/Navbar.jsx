@@ -105,7 +105,10 @@ export default function Navbar() {
             >
               <ShoppingBag size={20} />
               {count > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold-400 px-1 text-[10px] font-bold text-brand-950">
+                <span
+                  key={count}
+                  className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold-400 px-1 text-[10px] font-bold text-brand-950 animate-pop"
+                >
                   {count}
                 </span>
               )}

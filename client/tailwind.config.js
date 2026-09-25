@@ -54,11 +54,27 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-8px)' },
         },
+        'float-slow': {
+          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+          '50%': { transform: 'translateY(-16px) rotate(3deg)' },
+        },
+        pop: {
+          '0%': { transform: 'scale(0.4)' },
+          '70%': { transform: 'scale(1.18)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        'gradient-x': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
       },
       animation: {
         rise: 'rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
         shimmer: 'shimmer 1.6s linear infinite',
         float: 'float 4s ease-in-out infinite',
+        'float-slow': 'float-slow 7s ease-in-out infinite',
+        pop: 'pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'gradient-x': 'gradient-x 4s ease infinite',
       },
     },
   },

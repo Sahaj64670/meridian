@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import Toasts from './Toasts';
+import BackToTop from './BackToTop';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -18,6 +19,7 @@ export default function Layout() {
       </main>
       <Footer />
       <Toasts />
+      <BackToTop />
     </div>
   );
 }

@@ -5,6 +5,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 120px;
   }
   body {
     @apply bg-paper text-ink font-sans antialiased;
@@ -102,4 +103,30 @@
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0) scale(1);
+}
+
+/* Animated golden gradient headline text */
+.text-animated-gradient {
+  background: linear-gradient(90deg, #ff9f00, #ffd27a, #ff9f00);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-x 4s ease infinite;
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-float,
+  .animate-float-slow,
+  .animate-pop,
+  .text-animated-gradient {
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }

@@ -53,6 +53,8 @@ export default function Home() {
 
       {/* ------------------------------- HERO ------------------------------ */}
       <section className="relative overflow-hidden bg-brand-950">
+        <div className="pointer-events-none absolute -left-24 top-8 h-72 w-72 rounded-full bg-gold-400/15 blur-3xl animate-float-slow" />
+        <div className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-brand-500/20 blur-3xl animate-float" />
         <div
           className="absolute inset-0 opacity-[0.16]"
           style={{
@@ -67,7 +69,7 @@ export default function Home() {
             </p>
             <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-6xl">
               Everything worth owning,{' '}
-              <span className="text-gold-400 italic">delivered beautifully.</span>
+              <span className="text-animated-gradient italic">delivered beautifully.</span>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-brand-100/85">
               Electronics, fashion, home, beauty, sport, books, toys and grocery — one considered
@@ -126,7 +128,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-brand-950/85 via-brand-950/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-4">
                 <span
-                  className={`mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${CATEGORY_ICON_TINTS[c.accent] || 'from-brand-100 to-white text-brand-700'}`}
+                  className={`mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110 ${CATEGORY_ICON_TINTS[c.accent] || 'from-brand-100 to-white text-brand-700'}`}
                 >
                   <Tag size={14} />
                 </span>
